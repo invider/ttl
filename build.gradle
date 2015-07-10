@@ -1,0 +1,25 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "io.ttl.Total"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+sourceCompatibility = 1.7
+version = '1.0'
+ 
+
+jar {
+    manifest {
+            attributes 'Implementation-Title': 'Totally Lazy Calculator',
+                       'Implementation-Version': version,
+                       'Main-Class': mainClassName
+    }
+}
+
