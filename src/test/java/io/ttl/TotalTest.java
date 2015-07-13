@@ -1,12 +1,15 @@
-package total;
+package io.ttl;
 
 import org.junit.Test;
 
 public class TotalTest {
 
+    Calc calc = new Calc();
+
     @Test
-    public void testHello() {
-        System.out.println("Hello @Test");
-        assert true;
+    public void testBasicExpr() {
+        assert !calc.exec("2 + 2").equals("5");
+        assert calc.exec("2 + 2").equals("4");
+        assert calc.exec("2 + 2 * 3").equals("12");
     }
 }
