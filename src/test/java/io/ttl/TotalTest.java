@@ -14,8 +14,8 @@ public class TotalTest {
         } catch (Throwable t) {
             assert t instanceof EvalException;
         }
-        assert !calc.exec("2 + 2").equals("5");
-        assert calc.exec("2 + 2").equals("4");
-        assert calc.exec("2 + 2 * 3").equals("12");
+        assert !calc.exec("2 + 2").equals("" + 5d);
+        assert calc.exec("2 + 2").equals("" + 4d);
+        assert calc.exec("2 + 2 * 3").equals("" + 12d);
     }
 }
