@@ -1,5 +1,7 @@
 package io.ttl;
 
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.StringTokenizer;
 
 public class Calc implements Eval, Pile {
@@ -7,6 +9,18 @@ public class Calc implements Eval, Pile {
     @Override
     public String exec(String src) {
         try {
+            Reader reader = new StringReader(src);
+            Lex lex = new Lex(reader);
+
+            Token t = lex.getNext();
+
+            while(t.type != Token.TokenType.eof) {
+                System.out.println("" + t);
+                t = lex.getNext();
+            }
+            System.out.println("#" + t);
+            return "0";
+            /*
             StringTokenizer token = new StringTokenizer(src);
 
             String op = token.nextToken();
@@ -53,7 +67,7 @@ public class Calc implements Eval, Pile {
             }
 
             return "" + opd;
-
+*/
         } catch (EvalException e) {
             throw e;
         } catch (Throwable t) {
