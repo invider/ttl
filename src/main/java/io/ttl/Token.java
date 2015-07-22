@@ -3,7 +3,7 @@ package io.ttl;
 public class Token {
 
     enum TokenType {
-       number,
+        number,
         operator,
         delimiter,
         string,
