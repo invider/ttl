@@ -33,10 +33,19 @@ public class Calc implements Eval, Pile {
         }
     }
 
+    // BASIC SYNTAX
     // expr ::= expr + term | expr - term | term
     // term ::= term * factor | term / factor | term % factor | factor
     // factor ::= <number> | <string> | <id> | (expr)
 
+    // BASIC SYNTAX WITH ELIMINATED LEFT RECURSION
+    // expr ::= term moreterms
+    // moreterms ::= + term moreterms | - term moreterms | <E>
+    // term ::= factor morefactors
+    // morefactors ::= * factor morefactors | / factor morefactors | % factor morefactors | <E>
+    // factor ::= <number> | <string> | <id> | (expr)
+
+    // SYNTAX
     // expr ::= term moreterms
     // moreterms ::= + term moreterms | - term moreterms | <E>
     // term ::= factor morefactors
