@@ -7,12 +7,15 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class Total {
+
+    public static boolean loop = true;
+
     public static void main(String[] args) {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         Eval eval = new Calc();
 
-        while(true) {
+        while(loop) {
             try {
                 System.out.print("> ");
                 String line = br.readLine().trim();
@@ -22,7 +25,8 @@ public class Total {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (EvalException e) {
-                System.out.println("! " + e.getMessage() + " @(" + e.getSrc() + ")");
+                System.out.println("@ " + e.getSrc());
+                System.out.println("! " + e.getMessage());
             }
         }
     }

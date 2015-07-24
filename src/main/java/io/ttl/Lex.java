@@ -12,6 +12,8 @@ public class Lex {
 
     private char buf;
 
+    private StringBuilder curLine = new StringBuilder("");
+
     public Lex(Reader reader) {
         this.in = new BufferedReader(reader, 8192);
     }
@@ -66,18 +68,21 @@ public class Lex {
 
     private StringBuilder tokenBuffer;
 
-    public Token getNext() {
+    private Token parseNext() {
         while(true) {
             char c = getc();
+            curLine.append(c);
 
             switch(state) {
                 case base:
                     if (c == 0) return new Token(Token.TokenType.eof);
                     if (c == 0x0A) {
+                        curLine = new StringBuilder("");
                         return new Token(Token.TokenType.eol);
                     }
                     if (c == 0x0D) {
                         match((char)0x0A);
+                        curLine = new StringBuilder("");
                         return new Token(Token.TokenType.eol);
                     }
                     if (c == ' ') ;
@@ -94,11 +99,10 @@ public class Lex {
                     } else if (c == '\'') {
                         state = State.string;
                         tokenBuffer = new StringBuilder("");
-                    } else if (c == '(' || c == ')' || c == ',') {
-                        return new Token(Token.TokenType.delimiter, "" + c);
                     } else {
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
+                            case '(':case ')':case ',':
                                 return new Token(
                                         Token.TokenType.operator, "" + c);
                             default:
@@ -165,5 +169,26 @@ public class Lex {
                     break;
             }
         }
+    }
+
+    private boolean isTokenBuffered = false;
+
+    private Token lastToken;
+
+    public synchronized Token nextToken() {
+        if (isTokenBuffered) {
+            isTokenBuffered = false;
+            return lastToken;
+        }
+        lastToken = parseNext();
+        return lastToken;
+    }
+
+    public synchronized void retToken() {
+        isTokenBuffered = true;
+    }
+
+    public synchronized String getCurrentLine() {
+        return curLine.toString();
     }
 }
