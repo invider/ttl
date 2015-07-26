@@ -54,7 +54,7 @@ public class Dop extends Fun implements Val {
                 la = lval.eval(env);
                 if (la.getType() == ValType.NIL) return Nil.NIL;
                 ld = la.evalNum(env);
-                ra = lval.eval(env);
+                ra = rval.eval(env);
                 if (ra.getType() == ValType.NIL) return Nil.NIL;
                 return new Num(ld - ra.evalNum(env));
             case '*':
