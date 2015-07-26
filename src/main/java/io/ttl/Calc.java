@@ -19,7 +19,7 @@ public class Calc extends Env implements Eval {
         Reader reader = new StringReader(src);
         Lex lex = new Lex(reader);
         try {
-            Val lval = expr(lex);
+            Val lval = flow(lex);
             System.out.println("# " + lval);
             System.out.println("% " + lval.toTree());
             return lval.eval(env);
@@ -44,8 +44,10 @@ public class Calc extends Env implements Eval {
     // factor ::= <number> | <string> | <id> | (expr)
 
     // SYNTAX
-    // expr ::= levelor morexpr
-    // morexpr ::= ? expr ! expr
+    // flow ::= expr moreexpr
+    // moreflow  ::= ,flow | <E>
+    // expr ::= levelor morecond
+    // morecond ::= ? expr ! expr
     //          | ?~ expr
     //          | *~ expr
     //          | : expr
@@ -69,9 +71,24 @@ public class Calc extends Env implements Eval {
     // atom ::= <number> | <string> | <id> callmaybe | (expr)
     // callmaybe ::= (expr) | <E>
 
+    private Val flow(Lex lex) {
+        return moreflow(lex, expr(lex));
+    }
+
+    private Val moreflow(Lex lex, Val lval) {
+        Token t = lex.nextToken();
+        if (t.isOperator(",")) {
+            return new Chain(lval, flow(lex));
+        } else {
+            lex.retToken();
+            return lval;
+        }
+    }
+
     private Val expr(Lex lex) {
         return morecond(lex, levelor(lex));
     }
+
 
     private Val morecond(Lex lex, Val lval) {
         Token t = lex.nextToken();
@@ -193,7 +210,7 @@ public class Calc extends Env implements Eval {
     private Val atom(Lex lex) {
         Token t = lex.nextToken();
         if (t.isOperator("(")) {
-            Val lval = expr(lex);
+            Val lval = flow(lex);
             Token tc = lex.nextToken();
             if (!tc.isOperator(")")) {
                 throw new EvalException("syntax error: unexpected end of expression - ) is expected, found "
@@ -214,7 +231,7 @@ public class Calc extends Env implements Eval {
     private Val callmaybe(Lex lex, Id id) {
         Token t = lex.nextToken();
         if (t.isOperator("(")) {
-            Val setup = expr(lex);
+            Val setup = flow(lex);
             t = lex.nextToken();
             if (!t.isOperator(")")) {
                 throw new EvalException("syntax error: ) was expected");

@@ -23,7 +23,6 @@ public class Id extends Fun implements Val {
 
     @Override
     public Val eval(Env env) {
-        System.out.println("\nLooking in:\n" + env.toString());
         Val res = env.val(name);
         if (res.getType() == ValType.NIL) throw new EvalException("no value associated with [" + name + "]");
         return res;

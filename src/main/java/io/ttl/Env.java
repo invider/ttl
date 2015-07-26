@@ -44,7 +44,6 @@ public class Env {
     }
 
     public void set(String id, Val val) {
-        System.out.println("++ " + id + ": " + val);
         map.put(id, val);
     }
 
