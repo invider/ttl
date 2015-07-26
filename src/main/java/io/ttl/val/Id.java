@@ -1,16 +1,19 @@
 package io.ttl.val;
 
-import io.ttl.Pile;
+import io.ttl.Env;
+import io.ttl.EvalException;
 
-public class Id extends Nil implements Val {
+public class Id extends Fun implements Val {
 
-    private final Pile pile;
+    protected final String name;
 
-    private final String value;
+    public Id(String name) {
+        this.name = name.toLowerCase();
+    }
 
-    public Id(Pile pile, String value) {
-        this.pile = pile;
-        this.value = value.toLowerCase();
+    @Override
+    public boolean isAtom() {
+        return false;
     }
 
     @Override
@@ -19,24 +22,15 @@ public class Id extends Nil implements Val {
     }
 
     @Override
-    public String getStr() {
-        return this.value;
-    }
-
-    @Override
-    public Val getValue() {
-        Val res = pile.val(value);
-        if (res == null) throw new RuntimeException("no value associated with [" + value + "]");
+    public Val eval(Env env) {
+        System.out.println("\nLooking in:\n" + env.toString());
+        Val res = env.val(name);
+        if (res.getType() == ValType.NIL) throw new EvalException("no value associated with [" + name + "]");
         return res;
     }
 
     @Override
-    public String eval() {
-        return getValue().eval();
-    }
-
-    @Override
     public String toString() {
-        return "<" + value + ">";
+        return "<" + name + ">";
     }
 }

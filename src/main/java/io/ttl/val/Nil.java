@@ -1,5 +1,8 @@
 package io.ttl.val;
 
+import io.ttl.Env;
+import io.ttl.EvalException;
+
 public class Nil implements Val {
 
     public final static Nil NIL = new Nil();
@@ -7,28 +10,35 @@ public class Nil implements Val {
     public Nil() {}
 
     @Override
+    public boolean isAtom() {
+        return true;
+    }
+
+    @Override
     public ValType getType() {
         return ValType.NIL;
     }
 
     @Override
-    public Double getNum() {
-        throw new RuntimeException("wrong value type - not a number");
+    public Val eval(Env env) {
+        return this;
     }
 
     @Override
-    public String getStr() {
-        throw new RuntimeException("wrong value type - not a string");
+    public Double evalNum(Env env) {
+        throw new EvalException("type error: number is expected, but ["
+            + this.toString() + "] found instead");
     }
 
     @Override
-    public Val getValue() {
-        throw new RuntimeException("wrong value type - not an identifier");
+    public String evalStr(Env env) {
+        throw new RuntimeException("type error: string is expected, but ["
+            + this.toString() + "] found instead");
     }
 
     @Override
-    public String eval() {
-        return "";
+    public String toTree() {
+        return toString();
     }
 
     @Override

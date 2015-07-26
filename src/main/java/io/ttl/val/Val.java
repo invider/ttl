@@ -1,15 +1,18 @@
 package io.ttl.val;
 
+import io.ttl.Env;
+
 public interface Val {
+
+    public boolean isAtom();
 
     public ValType getType();
 
-    public Double getNum();
+    public Val eval(Env env);
 
-    public String getStr();
+    public Double evalNum(Env env);
 
-    public Val getValue();
+    public String evalStr(Env env);
 
-    public String eval();
-
+    public String toTree();
 }

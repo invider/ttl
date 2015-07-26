@@ -1,18 +1,16 @@
 package io.ttl.sys;
 
-import io.ttl.Pile;
+import io.ttl.Env;
 import io.ttl.val.Fun;
 import io.ttl.Total;
+import io.ttl.val.Nil;
+import io.ttl.val.Val;
 
 public class Exit extends Fun {
 
-    public Exit(Pile pile) {
-        super(pile);
-    }
-
     @Override
-    public String eval() {
+    public Val eval(Env env) {
         Total.loop = false;
-        return "";
+        return Nil.NIL;
     }
 }

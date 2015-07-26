@@ -26,6 +26,7 @@ public class Lex {
             }
             int c = in.read();
             if (c == -1) c = 0;
+            else curLine.append((char)c);
             buf = (char)c;
             return buf;
         } catch (IOException e) {
@@ -71,7 +72,6 @@ public class Lex {
     private Token parseNext() {
         while(true) {
             char c = getc();
-            curLine.append(c);
 
             switch(state) {
                 case base:
@@ -100,11 +100,41 @@ public class Lex {
                         state = State.string;
                         tokenBuffer = new StringBuilder("");
                     } else {
+                        char nc;
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
                             case '(':case ')':case ',':
+                            case '=':case '#':case ':':
                                 return new Token(
                                         Token.TokenType.operator, "" + c);
+                            case '<':
+                                nc = lookupNext();
+                                if (nc == '=') {
+                                    getc();
+                                    return new Token(Token.TokenType.operator, "<=");
+                                } else if (nc == '>') {
+                                    getc();
+                                    return new Token(Token.TokenType.operator, "<>");
+                                }
+                                return new Token(Token.TokenType.operator, "<");
+                            case '>':
+                                if (lookupNext() == '=') {
+                                    getc();
+                                    return new Token(Token.TokenType.operator, ">=");
+                                }
+                                return new Token(Token.TokenType.operator, ">");
+                            case '?':
+                                if (lookupNext() == '~') {
+                                    getc();
+                                    return new Token(Token.TokenType.operator, "?~");
+                                }
+                                return new Token(Token.TokenType.operator, "?");
+                            case '!':
+                                if (lookupNext() == '!') {
+                                    getc();
+                                    return new Token(Token.TokenType.operator, "!!");
+                                }
+                                return new Token(Token.TokenType.operator, "!");
                             default:
                                 throw new EvalException(
                                         "lexical error: unexpected symbol ["

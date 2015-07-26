@@ -1,11 +1,18 @@
 package io.ttl.val;
 
+import io.ttl.Env;
+
 public class Str extends Nil implements Val {
 
-    private final String value;
+    protected final String value;
 
     public Str(String value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean isAtom() {
+        return true;
     }
 
     @Override
@@ -14,17 +21,22 @@ public class Str extends Nil implements Val {
     }
 
     @Override
-    public String getStr() {
+    public Val eval(Env env) {
+        return this;
+    }
+
+    @Override
+    public String evalStr(Env env) {
         return value;
     }
 
     @Override
-    public String eval() {
-        return value;
+    public Double evalNum(Env env) {
+        return Double.parseDouble(value);
     }
 
     @Override
     public String toString() {
-        return value;
+        return "'" + value + "'";
     }
 }

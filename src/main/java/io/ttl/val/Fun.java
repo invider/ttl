@@ -1,13 +1,12 @@
 package io.ttl.val;
 
-import io.ttl.Pile;
+import io.ttl.Env;
 
 public abstract class Fun extends Nil implements Val{
 
-    private final Pile pile;
-
-    public Fun(Pile pile) {
-        this.pile = pile;
+    @Override
+    public boolean isAtom() {
+        return false;
     }
 
     @Override
@@ -16,8 +15,14 @@ public abstract class Fun extends Nil implements Val{
     }
 
     @Override
-    public String eval() {
-        return "";
+    abstract public Val eval(Env env);
+
+    public Double evalNum(Env env) {
+        return eval(env).evalNum(env);
+    }
+
+    public String evalStr(Env env) {
+        return eval(env).evalStr(env);
     }
 
     @Override
