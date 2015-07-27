@@ -4,7 +4,7 @@ import java.io.*;
 
 public class Lex {
 
-    private int pos = 0;
+    private StringBuilder lineBuf = new StringBuilder();
 
     private Reader in;
 
@@ -24,6 +24,7 @@ public class Lex {
             }
             int c = in.read();
             if (c == -1) c = 0;
+            else lineBuf.append((char)c);
             buf = (char)c;
             return buf;
         } catch (IOException e) {
@@ -32,7 +33,8 @@ public class Lex {
     }
 
     private void retc() {
-        if (isBuffered) throw new EvalException("Lex Error!");
+        if (isBuffered) throw new EvalException(
+                "lex error: can't return more than one character");
         isBuffered = true;
     }
 
@@ -48,7 +50,6 @@ public class Lex {
         retc();
         return nc;
     }
-
 
     private void verifyNoRepeat(char c) {
         if (tokenBuffer.indexOf("" + c) != -1) {
@@ -66,19 +67,25 @@ public class Lex {
 
     private StringBuilder tokenBuffer;
 
-    public Token getNext() {
+    private boolean isReturned = false;
+
+    private Token returnedToken;
+
+    private Token parseToken() {
         while(true) {
             char c = getc();
 
             switch(state) {
                 case base:
-                    if (c == 0) return new Token(Token.TokenType.eof);
+                    if (c == 0) return new Token(Token.Type.eof);
                     if (c == 0x0A) {
-                        return new Token(Token.TokenType.eol);
+                        lineBuf = new StringBuilder();
+                        return new Token(Token.Type.eol);
                     }
                     if (c == 0x0D) {
                         match((char)0x0A);
-                        return new Token(Token.TokenType.eol);
+                        lineBuf = new StringBuilder();
+                        return new Token(Token.Type.eol);
                     }
                     if (c == ' ') ;
                     else if (c >= '0' && c <= '9') {
@@ -94,13 +101,26 @@ public class Lex {
                     } else if (c == '\'') {
                         state = State.string;
                         tokenBuffer = new StringBuilder("");
-                    } else if (c == '(' || c == ')' || c == ',') {
-                        return new Token(Token.TokenType.delimiter, "" + c);
                     } else {
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
+                            case '=':case '(':case ')':case ',':
                                 return new Token(
-                                        Token.TokenType.operator, "" + c);
+                                        Token.Type.operator, "" + c);
+                            case '<':
+                                if (match('=')) {
+                                    new Token(Token.Type.operator, "<=");
+                                } else if (match('>')) {
+                                    new Token(Token.Type.operator, "<>");
+                                } else{
+                                    new Token(Token.Type.operator, "<");
+                                }
+                            case '>':
+                                if (match('=')) {
+                                    new Token(Token.Type.operator, ">=");
+                                } else{
+                                    new Token(Token.Type.operator, ">");
+                                }
                             default:
                                 throw new EvalException(
                                         "lexical error: unexpected symbol ["
@@ -117,7 +137,7 @@ public class Lex {
                     } else {
                         retc();
                         state = State.base;
-                        return new Token(Token.TokenType.id,
+                        return new Token(Token.Type.id,
                                 tokenBuffer.toString());
                     }
                     break;
@@ -142,7 +162,7 @@ public class Lex {
                     } else {
                         retc();
                         state = State.base;
-                        return new Token(Token.TokenType.number,
+                        return new Token(Token.Type.number,
                                 Double.parseDouble(tokenBuffer.toString()));
                     }
                     break;
@@ -156,7 +176,7 @@ public class Lex {
                             tokenBuffer.append(c);
                         } else {
                             state = State.base;
-                            return new Token(Token.TokenType.string,
+                            return new Token(Token.Type.string,
                                     tokenBuffer.toString());
                         }
                     } else {
@@ -165,5 +185,22 @@ public class Lex {
                     break;
             }
         }
+    }
+
+    public Token nextToken() {
+        if (isReturned) {
+            isReturned = false;
+            return returnedToken;
+        }
+        returnedToken = parseToken();
+        return returnedToken;
+    }
+
+    public void returnToken() {
+        isReturned = true;
+    }
+
+    public String getLastLine() {
+        return lineBuf.toString();
     }
 }

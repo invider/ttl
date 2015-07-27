@@ -2,92 +2,18 @@ package io.ttl;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.StringTokenizer;
 
-public class Calc implements Eval, Pile {
+public class Calc extends Env implements Eval {
 
     @Override
     public String exec(String src) {
         try {
             Reader reader = new StringReader(src);
             Lex lex = new Lex(reader);
-
-            Token t = lex.getNext();
-
-            while(t.type != Token.TokenType.eof) {
-                System.out.println("" + t);
-                t = lex.getNext();
-            }
-            System.out.println("#" + t);
-            return "0";
-            /*
-            StringTokenizer token = new StringTokenizer(src);
-
-            String op = token.nextToken();
-            double opd;
-            try {
-                opd = Double.parseDouble(op);
-            } catch (NumberFormatException e) {
-                throw new EvalException("Number is expected, found [" + op + "] instead", src);
-            }
-
-            while(token.hasMoreTokens()) {
-                String action = token.nextToken();
-                if (!token.hasMoreTokens()) {
-                    throw new EvalException("Unexpected end of expression", src);
-                }
-
-                String op2 = token.nextToken();
-                double opd2;
-                try {
-                    opd2 = Double.parseDouble(op2);
-                } catch (NumberFormatException e) {
-                    throw new EvalException("Number is expected, found [" + op2 + "] instead", src);
-                }
-
-                switch(action) {
-                    case "+":
-                        opd += opd2;
-                        break;
-                    case "-":
-                        opd -= opd2;
-                        break;
-                    case "*":
-                        opd *= opd2;
-                        break;
-                    case "/":
-                        opd /= opd2;
-                        break;
-                    case "%":
-                        opd %= opd2;
-                        break;
-                    default:
-                        throw new EvalException("Wrong operator [" + action + "]", src);
-                }
-            }
-
-            return "" + opd;
-*/
-        } catch (EvalException e) {
-            throw e;
+            Parser parser = new Parser(this, lex);
+            return parser.parse();
         } catch (Throwable t) {
             throw new EvalException(t, src);
         }
     }
-
-    @Override
-    public void push(Object val) {
-
-    }
-
-    @Override
-    public Object pop() {
-        return null;
-    }
-
-    @Override
-    public Object peek() {
-        return null;
-    }
-
 }

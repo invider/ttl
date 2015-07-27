@@ -2,27 +2,32 @@ package io.ttl;
 
 public class Token {
 
-    enum TokenType {
+    enum Type {
         number,
         operator,
-        delimiter,
         string,
         id,
         eol,
         eof
     }
 
-    public TokenType type;
+    public Type type;
 
     public Object value;
 
-    public Token(TokenType type) {
+    public Token(Type type) {
         this.type = type;
     }
 
-    public Token(TokenType type, Object value) {
+    public Token(Type type, Object value) {
         this.type = type;
         this.value = value;
+    }
+
+    public boolean matchOperator(String op) {
+        if (type != Type.operator) return false;
+        if (op.equals(value)) return true;
+        return false;
     }
 
     @Override

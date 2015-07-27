@@ -23,6 +23,7 @@ public class Total {
                 e.printStackTrace();
             } catch (EvalException e) {
                 System.out.println("! " + e.getMessage() + " @(" + e.getSrc() + ")");
+                e.printStackTrace();
             }
         }
     }
