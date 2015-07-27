@@ -29,12 +29,33 @@ public class TotalTest {
         assert !res.equals(out);
     }
 
+    private void te(String src) {
+        String res = eval.exec(src).trim();
+        assert !res.equals("<NIL>");
+    }
+
+    private void nil(String src) {
+        String res = eval.exec(src).trim();
+        assert res.equals("<NIL>");
+    }
+
     @Test
     public void testMathExpr() {
         eq("2+2", 4);
+        eq("2-5", -3d);
+        eq("4*4", 16);
+        eq("16/2", 8);
+        eq("10%3", 1);
         eq("2+2*3", 8);
         eq("2+2*(1+1)", 6);
-        eq("2-5", -3d);
+    }
+
+    @Test
+    public void testCompExpr() {
+        te("2=2");
+        te("2<>3");
+        nil("2=3");
+        nil("2<>2");
     }
 
     @Test

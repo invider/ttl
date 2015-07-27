@@ -47,9 +47,11 @@ public class Calc extends Env implements Eval {
     // flow ::= expr moreexpr
     // moreflow  ::= ,flow | <E>
     // expr ::= levelor morecond
-    // morecond ::= ? expr ! expr
+    // morecond ::=
+    //          | ? expr
+    //          | ? expr !! expr
     //          | ?~ expr
-    //          | *~ expr
+    //          | # expr
     //          | : expr
     //          | <E>
     // levelor ::= leveland moreor
@@ -68,7 +70,7 @@ public class Calc extends Env implements Eval {
     // moreterms ::= + levelfactor moreterms | - levelfactor moreterms | <E>
     // levelfactor ::= calllevel morefactors
     // morefactors ::= * atom morefactors | / atom morefactors | % atom morefactors | <E>
-    // atom ::= <number> | <string> | <id> callmaybe | (expr)
+    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (expr)
     // callmaybe ::= (expr) | <E>
 
     private Val flow(Lex lex) {
@@ -220,7 +222,7 @@ public class Calc extends Env implements Eval {
         } else if (t.type == Token.TokenType.number) {
             return new Num(t.getDouble());
         } else if (t.type == Token.TokenType.string) {
-            return new Str("" + t.value);
+            return callmaybe(lex, new Str("" + t.value));
         } else if (t.type == Token.TokenType.id) {
             return callmaybe(lex, new Id("" + t.value));
         }
@@ -228,7 +230,7 @@ public class Calc extends Env implements Eval {
         return Nil.NIL;
     }
 
-    private Val callmaybe(Lex lex, Id id) {
+    private Val callmaybe(Lex lex, Val fun) {
         Token t = lex.nextToken();
         if (t.isOperator("(")) {
             Val setup = flow(lex);
@@ -236,10 +238,10 @@ public class Calc extends Env implements Eval {
             if (!t.isOperator(")")) {
                 throw new EvalException("syntax error: ) was expected");
             }
-            return new Call(id, setup);
+            return new Call(fun, setup);
         } else {
             lex.retToken();
-            return id;
+            return fun;
         }
     }
 }

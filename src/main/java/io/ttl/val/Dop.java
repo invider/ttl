@@ -77,7 +77,7 @@ public class Dop extends Fun implements Val {
                 ld = la.evalNum(env);
                 ra = rval.eval(env);
                 if (ra.getType() == ValType.NIL) return Nil.NIL;
-                return new Num(ld / ra.evalNum(env));
+                return new Num(ld % ra.evalNum(env));
             case '=':
                 la = lval.eval(env);
                 ra = rval.eval(env);
