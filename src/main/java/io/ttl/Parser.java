@@ -13,6 +13,35 @@ public class Parser {
         this.lex = lex;
     }
 
+    // FULL SYNTAX
+    // flow ::= expr moreexpr
+    // moreflow  ::= ,flow | <E>
+    // expr ::= levelor morecond
+    // morecond ::= ? expr ! expr
+    //          | ?~ expr
+    //          | *~ expr
+    //          | : expr
+    //          | <E>
+    // levelor ::= leveland moreor
+    // moreor ::= || leveland moreor | <E>
+    // leveland :: levelcomp moreand
+    // moreand ::= && levelcomp moreand | <E>
+    // levelcomp ::= levelterm morecomp
+    // morecomp ::= > levelterm morecomp
+    //                | < levelterm morecomp
+    //                | >= levelterm morecomp
+    //                | <= levelterm morecomp
+    //                | = levelterm morecomp
+    //                | <> levelterm morecomp
+    //                | <E>
+    // levelterm ::= levelfactor moreterms
+    // moreterms ::= + levelfactor moreterms | - levelfactor moreterms | <E>
+    // levelfactor ::= calllevel morefactors
+    // morefactors ::= * atom morefactors | / atom morefactors | % atom morefactors | <E>
+    // atom ::= <number> | <string> | <id> callmaybe | (expr)
+    // callmaybe ::= (expr) | <E>
+
+    // BASIC SYNTAX
     // expr ::= factorlevel moreterms
     // moreterms ::= + factorlevel moreterms
     //               | - factorlevel moreterms
