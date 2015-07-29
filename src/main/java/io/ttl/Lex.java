@@ -104,7 +104,7 @@ public class Lex {
                     } else {
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
-                            case '=':case '(':case ')':case ',':
+                            case '=':case '(':case ')':case ',':case ':':
                                 return new Token(
                                         Token.Type.operator, "" + c);
                             case '<':

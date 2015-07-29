@@ -7,17 +7,30 @@ public class Nil implements Val {
 
     public static final Nil NIL = new Nil();
 
+    private Nil(){};
+
     @Override
     public Type getType() {
         return Type.nil;
     }
 
     @Override
-    public void expect(Type t) {
+    public Val expect(Type t) {
         if (t != Type.nil) {
             throw new EvalException(
                     "" + t + " was expected, but NIL is found");
         }
+        return this;
+    }
+
+    @Override
+    public boolean isAtom() {
+        return true;
+    }
+
+    @Override
+    public Val eval(Env env) {
+        return this;
     }
 
     @Override
@@ -33,5 +46,10 @@ public class Nil implements Val {
     @Override
     public String toString() {
         return "<NIL>";
+    }
+
+    @Override
+    public String toTree() {
+        return toString();
     }
 }

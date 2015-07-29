@@ -17,17 +17,33 @@ public class Str implements Val {
     }
 
     @Override
-    public void expect(Type t) {
+    public Val expect(Type t) {
         if (t != Type.string) {
             throw new EvalException(
                     "" + t + " was expected, but a string '"
                             + val + "' is found");
         }
+        return this;
+    }
+
+    @Override
+    public boolean isAtom() {
+        return true;
+    }
+
+    @Override
+    public Val eval(Env env) {
+        return this;
     }
 
     @Override
     public Double evalNum(Env env) {
-        return Double.parseDouble(val.trim());
+        try {
+            return Double.parseDouble(val.trim());
+        } catch (NumberFormatException e) {
+            throw new EvalException("number is expected, but string '"
+                + val + "' is found", e);
+        }
     }
 
     @Override
@@ -38,5 +54,10 @@ public class Str implements Val {
     @Override
     public String toString() {
         return "'" + val + "'";
+    }
+
+    @Override
+    public String toTree() {
+        return toString();
     }
 }

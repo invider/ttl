@@ -19,10 +19,11 @@ public class Total {
                 if (line.toLowerCase().equals("exit")) break;
                 String res = eval.exec(line);
                 System.out.println("= " + res);
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (EvalException e) {
                 System.out.println("! " + e.getMessage() + " @(" + e.getSrc() + ")");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch(Exception e) {
                 e.printStackTrace();
             }
         }

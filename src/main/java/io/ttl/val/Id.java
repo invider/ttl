@@ -5,7 +5,7 @@ import io.ttl.EvalException;
 
 public class Id implements Val {
 
-    private String name;
+    protected String name;
 
     public Id(String name) {
        this.name = name;
@@ -17,12 +17,23 @@ public class Id implements Val {
     }
 
     @Override
-    public void expect(Type t) {
+    public Val expect(Type t) {
         if (t != Type.id) {
             throw new EvalException(
                     "" + t + " was expected, but an id ["
                             + name + "] is found");
         }
+        return this;
+    }
+
+    @Override
+    public boolean isAtom() {
+        return false;
+    }
+
+    @Override
+    public Val eval(Env env) {
+        return env.val(name);
     }
 
     @Override
@@ -42,5 +53,10 @@ public class Id implements Val {
     @Override
     public String toString() {
         return "<" + name + ">";
+    }
+
+    @Override
+    public String toTree() {
+        return toString();
     }
 }

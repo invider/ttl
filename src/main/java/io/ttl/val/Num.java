@@ -17,12 +17,23 @@ public class Num implements Val {
     }
 
     @Override
-    public void expect(Type t) {
+    public Val expect(Type t) {
         if (t != Type.num) {
             throw new EvalException(
                     "" + t + " was expected, but a number ["
                     + val + "] is found");
         }
+        return this;
+    }
+
+    @Override
+    public boolean isAtom() {
+        return true;
+    }
+
+    @Override
+    public Val eval(Env env) {
+        return this;
     }
 
     @Override
@@ -38,5 +49,10 @@ public class Num implements Val {
     @Override
     public String toString() {
         return "" + val;
+    }
+
+    @Override
+    public String toTree() {
+        return toString();
     }
 }
