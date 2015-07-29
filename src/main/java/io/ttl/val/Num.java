@@ -1,7 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public class Num extends Nil implements Val {
 
     public static Num TRUE = new Num(1d);

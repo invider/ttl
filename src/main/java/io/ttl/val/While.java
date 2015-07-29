@@ -1,7 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public class While extends Op implements Val {
 
     private Val cond, ival;

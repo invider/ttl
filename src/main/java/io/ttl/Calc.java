@@ -224,6 +224,9 @@ public class Calc extends Env implements Eval {
         } else if (t.type == Token.TokenType.string) {
             return callmaybe(lex, new Str("" + t.value));
         } else if (t.type == Token.TokenType.id) {
+            if (("" + t.value).toLowerCase().equals("nil")) {
+                return callmaybe(lex, Nil.NIL);
+            }
             return callmaybe(lex, new Id("" + t.value));
         }
         lex.retToken();

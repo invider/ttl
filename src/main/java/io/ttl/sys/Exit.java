@@ -1,6 +1,6 @@
 package io.ttl.sys;
 
-import io.ttl.Env;
+import io.ttl.val.Env;
 import io.ttl.val.Fun;
 import io.ttl.Total;
 import io.ttl.val.Nil;

@@ -1,7 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public class Str extends Nil implements Val {
 
     protected final String value;

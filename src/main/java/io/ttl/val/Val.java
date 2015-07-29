@@ -1,7 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public interface Val {
 
     public boolean isAtom();

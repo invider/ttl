@@ -103,7 +103,7 @@ public class Lex {
                         char nc;
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
-                            case '(':case ')':case ',':
+                            case '(':case ')':case ',':case '.':
                             case '=':case '#':case ':':
                                 return new Token(
                                         Token.TokenType.operator, "" + c);

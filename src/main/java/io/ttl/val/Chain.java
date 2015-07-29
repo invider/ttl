@@ -1,7 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public class Chain extends Op implements Val {
 
     Val head, tail;

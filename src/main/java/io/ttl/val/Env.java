@@ -1,14 +1,11 @@
-package io.ttl;
-
-import io.ttl.val.Nil;
-import io.ttl.val.Val;
+package io.ttl.val;
 
 import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-public class Env {
+public class Env implements Val {
 
     private Env parent;
 
@@ -52,11 +49,42 @@ public class Env {
     }
 
     @Override
+    public boolean isAtom() {
+        return true;
+    }
+
+    @Override
+    public ValType getType() {
+        return ValType.ENV;
+    }
+
+    @Override
+    public Val eval(Env env) {
+        return this;
+    }
+
+    @Override
+    public Double evalNum(Env env) {
+        return null;
+    }
+
+    @Override
+    public String evalStr(Env env) {
+        return null;
+    }
+
+    @Override
+    public String toTree() {
+        return toString();
+    }
+
+    @Override
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        for (String id: map.keySet()) {
-            buf.append(id + ": " + map.get(id) + "\n");
+        buf.append("[");
+        for(String name: map.keySet()) {
+           buf.append(" ").append(name).append(":").append(map.get(name));
         }
-        return buf.toString();
+        return buf.append(" ]").toString();
     }
 }

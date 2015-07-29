@@ -1,7 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public abstract class Fun extends Nil implements Val{
 
     @Override

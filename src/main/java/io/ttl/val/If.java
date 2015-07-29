@@ -1,7 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public class If extends Op implements Val {
 
     private Val cond, tval;
