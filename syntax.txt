@@ -1,0 +1,10 @@
+    // expr ::= factorlevel moreterms
+    // moreterms ::= + factorlevel moreterms
+    //               | - factorlevel moreterms
+    //               | <E>
+    // factorlevel ::= atom morefactors
+    // morefactors ::= * atom morefactors
+    //                 | / atom morefactors
+    //                 | % atom morefactors
+    //                 | <E>
+    // atom ::= <number> | <string> | <id> | (expr)

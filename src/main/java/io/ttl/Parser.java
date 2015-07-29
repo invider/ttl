@@ -35,9 +35,12 @@ public class Parser {
     //                | <> levelterm morecomp
     //                | <E>
     // levelterm ::= levelfactor moreterms
-    // moreterms ::= + levelfactor moreterms | - levelfactor moreterms | <E>
-    // levelfactor ::= calllevel morefactors
-    // morefactors ::= * atom morefactors | / atom morefactors | % atom morefactors | <E>
+    // moreterms ::= + factorlevel moreterms | - factorlevel moreterms | <E>
+    // factorlevel ::= atom morefactors
+    // morefactors ::= * atom morefactors |
+    //                 / atom morefactors |
+    //                 % atom morefactors |
+    //                 <E>
     // atom ::= <number> | <string> | <id> callmaybe | (expr)
     // callmaybe ::= (expr) | <E>
 
@@ -57,10 +60,12 @@ public class Parser {
     }
 
     private Val expr() {
+        System.out.print("expr[" + lex.getLastLine() + "] ");
         return moreterms(factorlevel());
     }
 
     private Val moreterms(Val lval) {
+        System.out.print("moreterms[" + lex.getLastLine() + "] ");
         Token t = lex.nextToken();
         if (t.matchOperator("+")) {
             Val rval = factorlevel();
@@ -82,10 +87,12 @@ public class Parser {
     }
 
     private Val factorlevel() {
+        System.out.print("factorlevel[" + lex.getLastLine() + "] ");
         return morefactors(atom());
     }
 
     private Val morefactors(Val lval) {
+        System.out.print("morefactors[" + lex.getLastLine() + "] ");
         Token t = lex.nextToken();
         if (t.matchOperator("*")) {
             Val rval = atom();
@@ -106,6 +113,7 @@ public class Parser {
     }
 
     private Val atom() {
+        System.out.print("atom[" + lex.getLastLine() + "] ");
         Token t = lex.nextToken();
         if (t.type == Token.Type.number) {
             return new Num((Double)t.value);

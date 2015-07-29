@@ -201,6 +201,7 @@ public class Lex {
     }
 
     public String getLastLine() {
+        if (isBuffered) return lineBuf.substring(0, lineBuf.length()-1);
         return lineBuf.toString();
     }
 }
