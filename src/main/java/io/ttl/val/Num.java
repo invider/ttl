@@ -20,8 +20,8 @@ public class Num extends Nil implements Val {
     }
 
     @Override
-    public ValType getType() {
-        return ValType.NUM;
+    public Type getType() {
+        return Type.NUM;
     }
 
     @Override

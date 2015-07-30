@@ -12,7 +12,7 @@ public class IfElse extends Op implements Val {
 
     @Override
     public Val eval(Env env) {
-        if (cond.eval(env).getType() == ValType.NIL) return fval.eval(env);
+        if (cond.eval(env).getType() == Type.NIL) return fval.eval(env);
         return tval.eval(env);
     }
 

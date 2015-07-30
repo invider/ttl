@@ -11,7 +11,7 @@ public class If extends Op implements Val {
 
     @Override
     public Val eval(Env env) {
-        if (cond.eval(env).getType() == ValType.NIL) return Nil.NIL;
+        if (cond.eval(env).getType() == Type.NIL) return Nil.NIL;
         return tval.eval(env);
     }
 

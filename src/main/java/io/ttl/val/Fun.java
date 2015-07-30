@@ -8,8 +8,8 @@ public abstract class Fun extends Nil implements Val{
     }
 
     @Override
-    public ValType getType() {
-        return ValType.FUN;
+    public Type getType() {
+        return Type.FUN;
     }
 
     @Override

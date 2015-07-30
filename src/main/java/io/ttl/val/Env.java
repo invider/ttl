@@ -40,8 +40,13 @@ public class Env implements Val {
         return val;
     }
 
+    public Val parent() {
+        if (parent == null) return Nil.NIL;
+        return parent;
+    }
+
     public void set(String id, Val val) {
-        map.put(id, val);
+        map.put(id.toLowerCase(), val);
     }
 
     public Val apply(Env env, String src) {
@@ -54,8 +59,8 @@ public class Env implements Val {
     }
 
     @Override
-    public ValType getType() {
-        return ValType.ENV;
+    public Type getType() {
+        return Type.ENV;
     }
 
     @Override

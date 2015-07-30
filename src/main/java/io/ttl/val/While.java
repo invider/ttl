@@ -12,7 +12,7 @@ public class While extends Op implements Val {
     @Override
     public Val eval(Env env) {
         Val res = Nil.NIL;
-        while(cond.eval(env).getType() != ValType.NIL) {
+        while(cond.eval(env).getType() != Type.NIL) {
             res = ival.eval(env);
         }
         return res;

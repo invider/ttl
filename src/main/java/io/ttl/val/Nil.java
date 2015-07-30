@@ -14,8 +14,8 @@ public class Nil implements Val {
     }
 
     @Override
-    public ValType getType() {
-        return ValType.NIL;
+    public Type getType() {
+        return Type.NIL;
     }
 
     @Override
