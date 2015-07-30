@@ -83,7 +83,13 @@ public class Env implements Val {
         StringBuilder buf = new StringBuilder();
         buf.append("[");
         for(String name: map.keySet()) {
-           buf.append(" ").append(name).append(":").append(map.get(name));
+            buf.append(" ").append(name).append(":");
+            Val v = map.get(name);
+            if (v.getType() == ValType.ENV) {
+                buf.append("[...]");
+            } else {
+                buf.append(v.toString());
+            }
         }
         return buf.append(" ]").toString();
     }
