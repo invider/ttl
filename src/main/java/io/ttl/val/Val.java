@@ -2,9 +2,13 @@ package io.ttl.val;
 
 public interface Val {
 
+    enum Type {
+        NIL, NUM, STR, ID, FUN, OP, PAIR, ENV
+    }
+
     public boolean isAtom();
 
-    public ValType getType();
+    public Type getType();
 
     public Val eval(Env env);
 
@@ -13,4 +17,5 @@ public interface Val {
     public String evalStr(Env env);
 
     public String toTree();
+
 }

@@ -104,34 +104,33 @@ public class Lex {
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
                             case '(':case ')':case ',':case '.':
-                            case '=':case '#':case ':':
+                            case '=':case '#':
                                 return new Token(
                                         Token.TokenType.operator, "" + c);
+                            case ':':
+                                if (match(':')) {
+                                    return new Token(Token.TokenType.operator, "::");
+                                }
+                                return new Token(Token.TokenType.operator, ":");
                             case '<':
-                                nc = lookupNext();
-                                if (nc == '=') {
-                                    getc();
+                                if (match('=')) {
                                     return new Token(Token.TokenType.operator, "<=");
-                                } else if (nc == '>') {
-                                    getc();
+                                } else if (match('>')) {
                                     return new Token(Token.TokenType.operator, "<>");
                                 }
                                 return new Token(Token.TokenType.operator, "<");
                             case '>':
-                                if (lookupNext() == '=') {
-                                    getc();
+                                if (match('=')) {
                                     return new Token(Token.TokenType.operator, ">=");
                                 }
                                 return new Token(Token.TokenType.operator, ">");
                             case '?':
-                                if (lookupNext() == '~') {
-                                    getc();
+                                if (match('~')) {
                                     return new Token(Token.TokenType.operator, "?~");
                                 }
                                 return new Token(Token.TokenType.operator, "?");
                             case '!':
-                                if (lookupNext() == '!') {
-                                    getc();
+                                if (match('!')) {
                                     return new Token(Token.TokenType.operator, "!!");
                                 }
                                 return new Token(Token.TokenType.operator, "!");
@@ -215,7 +214,19 @@ public class Lex {
     }
 
     public synchronized void retToken() {
+        if (isTokenBuffered) {
+            throw new EvalException("lex error: trying to return second token to stream");
+        }
         isTokenBuffered = true;
+    }
+
+    public synchronized boolean matchOperator(String op) {
+        if (nextToken().isOperator(op)) {
+            return true;
+        } else {
+            retToken();
+            return false;
+        }
     }
 
     public synchronized String getCurrentLine() {

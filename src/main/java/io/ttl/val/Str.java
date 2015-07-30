@@ -14,8 +14,8 @@ public class Str extends Nil implements Val {
     }
 
     @Override
-    public ValType getType() {
-        return ValType.STR;
+    public Type getType() {
+        return Type.STR;
     }
 
     @Override

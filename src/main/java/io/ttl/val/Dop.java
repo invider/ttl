@@ -9,6 +9,7 @@ public class Dop extends Fun implements Val {
     public static final char GEQ = 3;
     public static final char OR  = 4;
     public static final char AND = 5;
+    public static final char PAIR = 6;
 
     private char op;
 
@@ -26,8 +27,8 @@ public class Dop extends Fun implements Val {
     }
 
     @Override
-    public ValType getType() {
-        return ValType.OP;
+    public Type getType() {
+        return Type.OP;
     }
 
     public Val eval(Env env) {
@@ -36,53 +37,53 @@ public class Dop extends Fun implements Val {
         switch(op) {
             case '+':
                 la = lval.eval(env);
-                if (la.getType() == ValType.NUM) {
+                if (la.getType() == Type.NUM) {
                     ra = rval.eval(env);
-                    if (ra.getType() == ValType.NIL) return Nil.NIL;
+                    if (ra.getType() == Type.NIL) return Nil.NIL;
                     return new Num(lval.evalNum(env) + rval.evalNum(env));
-                } else if (la.getType() == ValType.STR) {
+                } else if (la.getType() == Type.STR) {
                     ra = rval.eval(env);
-                    if (ra.getType() == ValType.NIL) {
+                    if (ra.getType() == Type.NIL) {
                         return new Str(lval.evalStr(env) + "<NIL>");
                     }
                     return new Str(lval.evalStr(env) + rval.evalStr(env));
-                } else if (la.getType() == ValType.NIL) {
+                } else if (la.getType() == Type.NIL) {
                     return Nil.NIL;
                 }
             case '-':
                 la = lval.eval(env);
-                if (la.getType() == ValType.NIL) return Nil.NIL;
+                if (la.getType() == Type.NIL) return Nil.NIL;
                 ld = la.evalNum(env);
                 ra = rval.eval(env);
-                if (ra.getType() == ValType.NIL) return Nil.NIL;
+                if (ra.getType() == Type.NIL) return Nil.NIL;
                 return new Num(ld - ra.evalNum(env));
             case '*':
                 la = lval.eval(env);
-                if (la.getType() == ValType.NIL) return Nil.NIL;
+                if (la.getType() == Type.NIL) return Nil.NIL;
                 ld = la.evalNum(env);
                 ra = rval.eval(env);
-                if (ra.getType() == ValType.NIL) return Nil.NIL;
+                if (ra.getType() == Type.NIL) return Nil.NIL;
                 return new Num(ld * ra.evalNum(env));
             case '/':
                 la = lval.eval(env);
-                if (la.getType() == ValType.NIL) return Nil.NIL;
+                if (la.getType() == Type.NIL) return Nil.NIL;
                 ld = la.evalNum(env);
                 ra = rval.eval(env);
-                if (ra.getType() == ValType.NIL) return Nil.NIL;
+                if (ra.getType() == Type.NIL) return Nil.NIL;
                 return new Num(ld / ra.evalNum(env));
             case '%':
                 la = lval.eval(env);
-                if (la.getType() == ValType.NIL) return Nil.NIL;
+                if (la.getType() == Type.NIL) return Nil.NIL;
                 ld = la.evalNum(env);
                 ra = rval.eval(env);
-                if (ra.getType() == ValType.NIL) return Nil.NIL;
+                if (ra.getType() == Type.NIL) return Nil.NIL;
                 return new Num(ld % ra.evalNum(env));
             case '=':
                 la = lval.eval(env);
                 ra = rval.eval(env);
                 if (la.equals(ra)) return Num.TRUE;
                 else return Nil.NIL;
-            case 1:
+            case NEQ:
                 la = lval.eval(env);
                 ra = rval.eval(env);
                 if (la.equals(ra)) return Nil.NIL;
@@ -90,10 +91,10 @@ public class Dop extends Fun implements Val {
             case '<':
                 la = lval.eval(env);
                 ra = rval.eval(env);
-                if (la.getType() == ValType.NUM || la.getType() == ValType.NUM) {
+                if (la.getType() == Type.NUM || la.getType() == Type.NUM) {
                     if (la.evalNum(env) < ra.evalNum(env)) return Num.TRUE;
                     else return Nil.NIL;
-                } else if (la.getType() == ValType.STR || ra.getType() == ValType.STR) {
+                } else if (la.getType() == Type.STR || ra.getType() == Type.STR) {
                     if (la.evalStr(env).compareTo(ra.evalStr(env)) < 0) return Num.TRUE;
                     return Nil.NIL;
                 } else {
@@ -103,54 +104,63 @@ public class Dop extends Fun implements Val {
             case '>':
                 la = lval.eval(env);
                 ra = rval.eval(env);
-                if (la.getType() == ValType.NUM || la.getType() == ValType.NUM) {
+                if (la.getType() == Type.NUM || la.getType() == Type.NUM) {
                     if (la.evalNum(env) > ra.evalNum(env)) return Num.TRUE;
                     else return Nil.NIL;
-                } else if (la.getType() == ValType.STR || ra.getType() == ValType.STR) {
+                } else if (la.getType() == Type.STR || ra.getType() == Type.STR) {
                     if (la.evalStr(env).compareTo(ra.evalStr(env)) > 0) return Num.TRUE;
                     return Nil.NIL;
                 } else {
                     throw new EvalException("can't apply operation > to ["
                             + la + "] and [" + ra + "]");
                 }
-            case 2:
+            case LEQ:
                 la = lval.eval(env);
                 ra = rval.eval(env);
-                if (la.getType() == ValType.NUM || la.getType() == ValType.NUM) {
+                if (la.getType() == Type.NUM || la.getType() == Type.NUM) {
                     if (la.evalNum(env) <= ra.evalNum(env)) return Num.TRUE;
                     else return Nil.NIL;
-                } else if (la.getType() == ValType.STR || ra.getType() == ValType.STR) {
+                } else if (la.getType() == Type.STR || ra.getType() == Type.STR) {
                     if (la.evalStr(env).compareTo(ra.evalStr(env)) <= 0) return Num.TRUE;
                     return Nil.NIL;
                 } else {
                     throw new EvalException("can't apply operation <= to ["
                             + la + "] and [" + ra + "]");
                 }
-            case 3:
+            case GEQ:
                 la = lval.eval(env);
                 ra = rval.eval(env);
-                if (la.getType() == ValType.NUM || la.getType() == ValType.NUM) {
+                if (la.getType() == Type.NUM || la.getType() == Type.NUM) {
                     if (la.evalNum(env) >= ra.evalNum(env)) return Num.TRUE;
                     else return Nil.NIL;
-                } else if (la.getType() == ValType.STR || ra.getType() == ValType.STR) {
+                } else if (la.getType() == Type.STR || ra.getType() == Type.STR) {
                     if (la.evalStr(env).compareTo(ra.evalStr(env)) >= 0) return Num.TRUE;
                     return Nil.NIL;
                 } else {
                     throw new EvalException("can't apply operation >= to ["
                             + la + "] and [" + ra + "]");
                 }
-            case 4:
-                la = lval.eval(env);
-                if (la.getType() == ValType.NIL) return Nil.NIL;
-                ra = rval.eval(env);
-                if (ra.getType() == ValType.NIL) return Nil.NIL;
-                return Num.TRUE;
-            case 5:
+            case OR:
                 la = lval.eval(env);
                 ra = rval.eval(env);
-                if (la.getType() == ValType.NIL && ra.getType() == ValType.NIL) return Nil.NIL;
+                if (la.getType() == Type.NIL && ra.getType() == Type.NIL) return Nil.NIL;
                 return Num.TRUE;
-
+            case AND:
+                la = lval.eval(env);
+                if (la.getType() == Type.NIL) return Nil.NIL;
+                ra = rval.eval(env);
+                if (ra.getType() == Type.NIL) return Nil.NIL;
+                return Num.TRUE;
+            case PAIR:
+                return new Pair(lval.eval(env), rval.eval(env));
+            case '.':
+                if (lval.getType() == Type.NIL) la = env;
+                else la = lval.eval(env);
+                if (la.getType() == Type.ENV) {
+                    return rval.eval((Env)la);
+                } else {
+                    throw new EvalException("can't access with . value [" + lval + "]");
+                }
             default:
                 throw new EvalException("unsupported operation: [" + op + "]");
         }
@@ -163,6 +173,7 @@ public class Dop extends Fun implements Val {
             case GEQ: return ">=";
             case OR:  return "||";
             case AND: return "&&";
+            case PAIR: return "::";
             default:  return "" + op;
         }
     }
