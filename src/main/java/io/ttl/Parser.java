@@ -34,7 +34,6 @@ public class Parser {
     //          | ? expr !! expr
     //          | ?~ expr
     //          | # expr
-    //          | : expr
     //          | <E>
     // levelor ::= leveland moreor
     // moreor ::= || leveland moreor | <E>
@@ -52,8 +51,8 @@ public class Parser {
     // moreterms ::= + levelfactor moreterms | - levelfactor moreterms | <E>
     // levelfactor ::= calllevel morefactors
     // morefactors ::= * atom morefactors | / atom morefactors | % atom morefactors | <E>
-    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (expr)
-    // callmaybe ::= (expr) | . atom <E>
+    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (expr) | [expr] | <E>
+    // callmaybe ::= (expr) | . atom | : expr | <E>
 
     public Val parse() {
         return flow();
@@ -103,11 +102,6 @@ public class Parser {
             return new While(lval, expr());
         } else if (lex.matchOperator("#")) {
             return new For(lval, expr());
-        } else if (lex.matchOperator(":")) {
-            if (lval.getType() != Val.Type.ID) {
-                throw new EvalException("identifier is expected, but [" + lval + "] found instead");
-            }
-            return new Map((Id)lval, expr());
         } else {
             return lval;
         }
@@ -200,10 +194,18 @@ public class Parser {
             Val lval = flow();
             Token tc = lex.nextToken();
             if (!tc.isOperator(")")) {
-                throw new EvalException("syntax error: unexpected end of expression - ) is expected, found "
-                    + tc + " instead");
+                throw new EvalException("syntax error: ) is expected, found "
+                        + tc + " instead");
             }
             return lval;
+        } else if (t.isOperator("[")) {
+            Val lval = flow();
+            Token tc = lex.nextToken();
+            if (!tc.isOperator("]")) {
+                throw new EvalException("syntax error: ] was expected, found ["
+                        + tc + "] instead");
+            }
+            return new Env(lval);
         } else if (t.type == Token.TokenType.number) {
             return new Num(t.getDouble());
         } else if (t.type == Token.TokenType.string) {
@@ -229,6 +231,11 @@ public class Parser {
             return new Call(fun, setup);
         } else if (lex.matchOperator(".")) {
             return new Dop('.', fun, atom());
+        } else if (lex.matchOperator(":")) {
+            if (fun.getType() != Val.Type.ID) {
+                throw new EvalException("identifier is expected, but [" + fun + "] found instead");
+            }
+            return new Map((Id)fun, expr());
         } else {
             return fun;
         }
