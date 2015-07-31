@@ -51,7 +51,7 @@ public class Parser {
     // moreterms ::= + levelfactor moreterms | - levelfactor moreterms | <E>
     // levelfactor ::= calllevel morefactors
     // morefactors ::= * atom morefactors | / atom morefactors | % atom morefactors | <E>
-    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (expr) | [expr] | <E>
+    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (expr) | [expr] | . | .. | <E>
     // callmaybe ::= (expr) | . atom | : expr | <E>
 
     public Val parse() {
@@ -206,17 +206,19 @@ public class Parser {
                         + tc + "] instead");
             }
             return new Env(lval);
-        } else if (t.type == Token.TokenType.number) {
+        } else if (t.type == Token.Type.number) {
             return new Num(t.getDouble());
-        } else if (t.type == Token.TokenType.string) {
+        } else if (t.type == Token.Type.string) {
             return callmaybe(new Str("" + t.value));
-        } else if (t.type == Token.TokenType.id) {
+        } else if (t.type == Token.Type.id) {
             if (("" + t.value).toLowerCase().equals("nil")) {
                 return callmaybe(Nil.NIL);
             }
             return callmaybe(new Id("" + t.value));
         } else if (t.isOperator(".")) {
-            return callmaybe(new Dop('.', Nil.NIL, atom()));
+            return new Scope(atom());
+        } else if (t.isOperator("..")) {
+            return new Host(atom());
         }
         lex.retToken();
         return Nil.NIL;

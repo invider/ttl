@@ -75,15 +75,15 @@ public class Lex {
 
             switch(state) {
                 case base:
-                    if (c == 0) return new Token(Token.TokenType.eof);
+                    if (c == 0) return new Token(Token.Type.eof);
                     if (c == 0x0A) {
                         curLine = new StringBuilder("");
-                        return new Token(Token.TokenType.eol);
+                        return new Token(Token.Type.eol);
                     }
                     if (c == 0x0D) {
                         match((char)0x0A);
                         curLine = new StringBuilder("");
-                        return new Token(Token.TokenType.eol);
+                        return new Token(Token.Type.eol);
                     }
                     if (c == ' ') ;
                     else if (c >= '0' && c <= '9') {
@@ -104,36 +104,41 @@ public class Lex {
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
                             case '(':case ')':case '[':case ']':
-                            case ',':case '.':case '=':case '#':
+                            case ',':case '=':case '#':
                                 return new Token(
-                                        Token.TokenType.operator, "" + c);
+                                        Token.Type.operator, "" + c);
+                            case '.':
+                                if (match('.')) {
+                                    return new Token(Token.Type.operator, "..");
+                                }
+                                return new Token(Token.Type.operator, ".");
                             case ':':
                                 if (match(':')) {
-                                    return new Token(Token.TokenType.operator, "::");
+                                    return new Token(Token.Type.operator, "::");
                                 }
-                                return new Token(Token.TokenType.operator, ":");
+                                return new Token(Token.Type.operator, ":");
                             case '<':
                                 if (match('=')) {
-                                    return new Token(Token.TokenType.operator, "<=");
+                                    return new Token(Token.Type.operator, "<=");
                                 } else if (match('>')) {
-                                    return new Token(Token.TokenType.operator, "<>");
+                                    return new Token(Token.Type.operator, "<>");
                                 }
-                                return new Token(Token.TokenType.operator, "<");
+                                return new Token(Token.Type.operator, "<");
                             case '>':
                                 if (match('=')) {
-                                    return new Token(Token.TokenType.operator, ">=");
+                                    return new Token(Token.Type.operator, ">=");
                                 }
-                                return new Token(Token.TokenType.operator, ">");
+                                return new Token(Token.Type.operator, ">");
                             case '?':
                                 if (match('~')) {
-                                    return new Token(Token.TokenType.operator, "?~");
+                                    return new Token(Token.Type.operator, "?~");
                                 }
-                                return new Token(Token.TokenType.operator, "?");
+                                return new Token(Token.Type.operator, "?");
                             case '!':
                                 if (match('!')) {
-                                    return new Token(Token.TokenType.operator, "!!");
+                                    return new Token(Token.Type.operator, "!!");
                                 }
-                                return new Token(Token.TokenType.operator, "!");
+                                return new Token(Token.Type.operator, "!");
                             default:
                                 throw new EvalException(
                                         "lexical error: unexpected symbol ["
@@ -150,7 +155,7 @@ public class Lex {
                     } else {
                         retc();
                         state = State.base;
-                        return new Token(Token.TokenType.id,
+                        return new Token(Token.Type.id,
                                 tokenBuffer.toString());
                     }
                     break;
@@ -175,7 +180,7 @@ public class Lex {
                     } else {
                         retc();
                         state = State.base;
-                        return new Token(Token.TokenType.number,
+                        return new Token(Token.Type.number,
                                 Double.parseDouble(tokenBuffer.toString()));
                     }
                     break;
@@ -189,7 +194,7 @@ public class Lex {
                             tokenBuffer.append(c);
                         } else {
                             state = State.base;
-                            return new Token(Token.TokenType.string,
+                            return new Token(Token.Type.string,
                                     tokenBuffer.toString());
                         }
                     } else {

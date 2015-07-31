@@ -2,7 +2,7 @@ package io.ttl;
 
 public class Token {
 
-    enum TokenType {
+    enum Type {
         number,
         operator,
         string,
@@ -11,28 +11,28 @@ public class Token {
         eof
     }
 
-    public TokenType type;
+    public Type type;
 
     public Object value;
 
-    public Token(TokenType type) {
+    public Token(Type type) {
         this.type = type;
     }
 
-    public Token(TokenType type, Object value) {
+    public Token(Type type, Object value) {
         this.type = type;
         this.value = value;
     }
 
     public boolean isOperator(String op) {
-        return type == TokenType.operator
+        return type == Type.operator
             && value != null
             && value instanceof String
             && value.equals(op);
     }
 
     public Double getDouble() {
-        if (type != TokenType.number || value == null || !(value instanceof Double)) {
+        if (type != Type.number || value == null || !(value instanceof Double)) {
             throw new EvalException("type mismatch: double is expected");
         }
         return (Double)value;
