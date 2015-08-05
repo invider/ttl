@@ -5,7 +5,7 @@ import io.ttl.EvalException;
 
 public class Num implements Val {
 
-    private Double val;
+    private final Double val;
 
     public Num(Double val) {
         this.val = val;

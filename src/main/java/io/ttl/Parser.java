@@ -16,8 +16,10 @@ public class Parser {
     // FULL SYNTAX
     // flow ::= expr moreexpr
     // moreflow  ::= ,flow | <E>
-    // expr ::= orlevel morecond
-    // morecond ::= ? expr ! expr
+    // expr ::= condlevel
+    // condlevel ::= orlevel morecond
+    // morecond ::= ? expr
+    //          | ? expr !! expr
     //          | ?~ expr
     //          | *~ expr
     //          | <E>
@@ -25,7 +27,7 @@ public class Parser {
     // moreor ::= || andlevel moreor | <E>
     // andlevel :: levelcomp moreand
     // moreand ::= && levelcomp moreand | <E>
-    // levelcomp ::= termlevel morecomp
+    // complevel ::= termlevel morecomp
     // morecomp ::= > termlevel morecomp
     //                | < termlevel morecomp
     //                | >= termlevel morecomp
@@ -35,11 +37,12 @@ public class Parser {
     //                | <E>
     // termlevel ::= factorlevel moreterms
     // moreterms ::= + factorlevel moreterms | - factorlevel moreterms | <E>
-    // factorlevel ::= atom morefactors
-    // morefactors ::= * atom morefactors |
-    //                 / atom morefactors |
-    //                 % atom morefactors |
+    // factorlevel ::= not morefactors
+    // morefactors ::= * not morefactors |
+    //                 / not morefactors |
+    //                 % not morefactors |
     //                 <E>
+    // not ::= atom | !atom
     // atom ::= <number> | <string> callmaybe | <id> callmaybe | (expr)
     // callmaybe ::= (expr) | :expr | <E>
 
@@ -59,6 +62,84 @@ public class Parser {
     }
 
     private Val expr() {
+        return condlevel();
+    }
+
+    private Val condlevel() {
+        return morecond(orlevel());
+    }
+
+    private Val morecond(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator("?")) {
+            Val tval = expr();
+            t = lex.nextToken();
+            if (t.matchOperator("!!")) {
+                Val fval = expr();
+                return new If(lval, tval, fval);
+            } else {
+                lex.returnToken();
+                return new If(lval, tval);
+            }
+        } else {
+            lex.returnToken();
+            return lval;
+        }
+    }
+
+    private Val orlevel() {
+        return moreor(andlevel());
+    }
+
+    private Val moreor(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator("||")) {
+            return moreor(new Op("||", lval, andlevel()));
+        } else {
+            lex.returnToken();
+            return lval;
+        }
+    }
+
+    private Val andlevel() {
+        return moreand(complevel());
+    }
+
+    private Val moreand(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator("&&")) {
+            return moreand(new Op("&&", lval, complevel()));
+        } else {
+            lex.returnToken();
+            return lval;
+        }
+    }
+
+    private Val complevel() {
+        return morecomp(termlevel());
+    }
+
+    private Val morecomp(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator("<")) {
+            return morecomp(new Op("<", lval, termlevel()));
+        } else if (t.matchOperator("<=")) {
+            return morecomp(new Op("<=", lval, termlevel()));
+        } else if (t.matchOperator(">")) {
+            return morecomp(new Op(">", lval, termlevel()));
+        } else if (t.matchOperator(">=")) {
+            return morecomp(new Op(">=", lval, termlevel()));
+        } else if (t.matchOperator("=")) {
+            return morecomp(new Op("=", lval, termlevel()));
+        } else if (t.matchOperator("<>")) {
+            return morecomp(new Op("<>", lval, termlevel()));
+        } else {
+            lex.returnToken();
+            return lval;
+        }
+    }
+
+    private Val termlevel() {
         return moreterms(factorlevel());
     }
 
@@ -75,20 +156,30 @@ public class Parser {
     }
 
     private Val factorlevel() {
-        return morefactors(atom());
+        return morefactors(not());
     }
 
     private Val morefactors(Val lval) {
         Token t = lex.nextToken();
         if (t.matchOperator("*")) {
-            return morefactors(new Op("*", lval, atom()));
+            return morefactors(new Op("*", lval, not()));
         } else if (t.matchOperator("/")) {
-            return morefactors(new Op("/", lval, atom()));
+            return morefactors(new Op("/", lval, not()));
         } else if (t.matchOperator("%")) {
-            return morefactors(new Op("%", lval, atom()));
+            return morefactors(new Op("%", lval, not()));
         } else {
             lex.returnToken();
             return lval;
+        }
+    }
+
+    private Val not() {
+        Token t = lex.nextToken();
+        if (t.matchOperator("!")) {
+            return new Uop('!', atom());
+        } else {
+            lex.returnToken();
+            return atom();
         }
     }
 

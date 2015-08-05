@@ -105,22 +105,38 @@ public class Lex {
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
                             case '=':case '(':case ')':case ',':case ':':
+                            case '?':
                                 return new Token(
                                         Token.Type.operator, "" + c);
                             case '<':
                                 if (match('=')) {
-                                    new Token(Token.Type.operator, "<=");
+                                    return new Token(Token.Type.operator, "<=");
                                 } else if (match('>')) {
-                                    new Token(Token.Type.operator, "<>");
+                                    return new Token(Token.Type.operator, "<>");
                                 } else{
-                                    new Token(Token.Type.operator, "<");
+                                    return new Token(Token.Type.operator, "<");
                                 }
                             case '>':
                                 if (match('=')) {
-                                    new Token(Token.Type.operator, ">=");
+                                    return new Token(Token.Type.operator, ">=");
                                 } else{
-                                    new Token(Token.Type.operator, ">");
+                                    return new Token(Token.Type.operator, ">");
                                 }
+                            case '&':
+                                if (match('&')) {
+                                    return new Token(Token.Type.operator, "&&");
+                                }
+                                return new Token(Token.Type.operator, "&");
+                            case '|':
+                                if (match('|')) {
+                                    return new Token(Token.Type.operator, "||");
+                                }
+                                return new Token(Token.Type.operator, "|");
+                            case '!':
+                                if (match('!')) {
+                                   return new Token(Token.Type.operator, "!!");
+                                }
+                                return new Token(Token.Type.operator, "!");
                             default:
                                 throw new EvalException(
                                         "lexical error: unexpected symbol ["

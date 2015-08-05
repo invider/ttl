@@ -34,6 +34,36 @@ public class Op implements Val {
         return false;
     }
 
+    private Val comp(Env env) {
+        if (lval.getType() == Type.num) {
+            double ld = lval.evalNum(env);
+            double rd = rval.evalNum(env);
+            switch(op) {
+                case "<": return (ld < rd)? Val.TRUE : Nil.NIL;
+                case "<=": return (ld <= rd)? Val.TRUE : Nil.NIL;
+                case ">": return (ld > rd)? Val.TRUE : Nil.NIL;
+                case ">=": return (ld >= rd)? Val.TRUE : Nil.NIL;
+                case "=": return (ld == rd)? Val.TRUE : Nil.NIL;
+                case "<>": return (ld != rd)? Val.TRUE : Nil.NIL;
+            }
+        } else if (lval.getType() == Type.string) {
+            String ls = lval.evalStr(env);
+            String rs = rval.evalStr(env);
+            switch(op) {
+                case "<": return (ls.compareTo(rs) < 0)? Val.TRUE : Nil.NIL;
+                case "<=": return (ls.compareTo(rs) <= 0)? Val.TRUE : Nil.NIL;
+                case ">": return (ls.compareTo(rs) > 0)? Val.TRUE : Nil.NIL;
+                case ">=": return (ls.compareTo(rs) >= 0)? Val.TRUE : Nil.NIL;
+                case "=": return (ls.equals(rs))? Val.TRUE : Nil.NIL;
+                case "<>": return (!ls.equals(rs))? Val.TRUE : Nil.NIL;
+            }
+        } else {
+            throw new EvalException("unexpected type for comparison: ["
+                    + lval + "]");
+        }
+        return Nil.NIL;
+    }
+
     @Override
     public Val eval(Env env) {
         switch (op) {
@@ -62,6 +92,21 @@ public class Op implements Val {
                 Val val = rval.eval(env);
                 env.set(id.name, val);
                 return val;
+            case "<":case "<=":case ">":case ">=":
+            case "=":case "<>":
+                return comp(env);
+            case "&&":
+                Val lp = lval.eval(env);
+                if (lp.getType() == Type.nil) return Nil.NIL;
+                Val rp = rval.eval(env);
+                if (rp.getType() == Type.nil) return Nil.NIL;
+                return Val.TRUE;
+            case "||":
+                lp = lval.eval(env);
+                if (lp.getType() != Type.nil) return Val.TRUE;
+                rp = rval.eval(env);
+                if (rp.getType() != Type.nil) return Val.TRUE;
+                return Nil.NIL;
             default:
                 throw new EvalException("unknown operator: " + op);
         }
