@@ -7,7 +7,7 @@ public interface Val {
     public static final Val TRUE = new Num(1d);
 
     public enum Type {
-        nil, num, string, id, op
+        nil, num, string, id, op, fun, sys, group
     }
 
     public Val expect(Type t);

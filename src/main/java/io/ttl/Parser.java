@@ -14,7 +14,7 @@ public class Parser {
     }
 
     // FULL SYNTAX
-    // flow ::= expr moreexpr
+    // flow ::= expr moreflow
     // moreflow  ::= ,flow | <E>
     // expr ::= condlevel
     // condlevel ::= orlevel morecond
@@ -43,8 +43,8 @@ public class Parser {
     //                 % not morefactors |
     //                 <E>
     // not ::= atom | !atom
-    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (expr)
-    // callmaybe ::= (expr) | :expr | <E>
+    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (flow)
+    // callmaybe ::= (flow) | :expr | <E>
 
     // BASIC SYNTAX
     // expr ::= factorlevel moreterms
@@ -58,7 +58,21 @@ public class Parser {
     //                 | <E>
     // atom ::= <number> | <string> | <id> | (expr)
     public Val parse() {
-        return expr();
+        return flow();
+    }
+
+    private Val flow() {
+        return moreflow(expr());
+    }
+
+    private Val moreflow(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator(",")) {
+            return new Group(lval, flow());
+        } else {
+            lex.returnToken();
+            return lval;
+        }
     }
 
     private Val expr() {
@@ -188,11 +202,11 @@ public class Parser {
         if (t.type == Token.Type.number) {
             return new Num((Double)t.value);
         } else if (t.type == Token.Type.string) {
-            return new Str("" + t.value);
+            return callmaybe(new Str("" + t.value));
         } else if (t.type == Token.Type.id) {
             return callmaybe(new Id("" + t.value));
         } else if (t.matchOperator("(")) {
-            Val v = expr();
+            Val v = flow();
             t = lex.nextToken();
             if (!t.matchOperator(")")) {
                 throw new EvalException("lexical error: ) was expected");
@@ -208,6 +222,14 @@ public class Parser {
         Token t = lex.nextToken();
         if (t.matchOperator(":")) {
             return new Op(":", lval, expr());
+        } else if (t.matchOperator("(")) {
+            Val rval = flow();
+            t = lex.nextToken();
+            if (!t.matchOperator(")")) {
+                throw new EvalException("lexical error: ) was expected, but ["
+                    + t + "] found");
+            }
+            return new Fun(lval, rval);
         } else {
             lex.returnToken();
             return lval;

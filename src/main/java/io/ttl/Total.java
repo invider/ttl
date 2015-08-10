@@ -10,16 +10,16 @@ public class Total {
     public static void main(String[] args) {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        Eval eval = new Calc();
+        Env calc = new Calc();
 
         while(true) {
             try {
                 System.out.print("> ");
                 String line = br.readLine().trim();
-                if (line.toLowerCase().equals("exit")) break;
-                String res = eval.exec(line);
+                String res = calc.exec(line);
                 System.out.println("= " + res);
             } catch (EvalException e) {
+                e.printStackTrace();
                 System.out.println("! " + e.getMessage() + " @(" + e.getSrc() + ")");
             } catch (IOException e) {
                 e.printStackTrace();

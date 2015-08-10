@@ -4,10 +4,10 @@ import org.junit.Test;
 
 public class TotalTest {
 
-    Eval eval = new Calc();
+    Env env = new Calc();
 
     private double e(String str) {
-        String res = eval.exec(str).trim();
+        String res = env.exec(str).trim();
         return Double.parseDouble(res);
     }
 
