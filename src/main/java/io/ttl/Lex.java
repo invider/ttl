@@ -104,10 +104,15 @@ public class Lex {
                     } else {
                         switch(c) {
                             case '+':case '-':case '*':case '/':case '%':
-                            case '=':case '(':case ')':case ',':case ':':
-                            case '?':
+                            case '=':case '(':case ')':case '[':case ']':
+                            case ',':case ':':case '?':
                                 return new Token(
                                         Token.Type.operator, "" + c);
+                            case '.':
+                                if (match('.')) {
+                                    return new Token(Token.Type.operator, "..");
+                                }
+                                return new Token(Token.Type.operator, ".");
                             case '<':
                                 if (match('=')) {
                                     return new Token(Token.Type.operator, "<=");

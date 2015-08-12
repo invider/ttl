@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public class Group implements Val {
@@ -32,19 +31,19 @@ public class Group implements Val {
     }
 
     @Override
-    public Val eval(Env env) {
-        head.eval(env);
-        return tail.eval(env);
+    public Val eval(Scope scope) {
+        head.eval(scope);
+        return tail.eval(scope);
     }
 
     @Override
-    public Double evalNum(Env env) {
-        return eval(env).expect(Type.num).evalNum(env);
+    public Double evalNum(Scope scope) {
+        return eval(scope).expect(Type.num).evalNum(scope);
     }
 
     @Override
-    public String evalStr(Env env) {
-        return eval(env).expect(Type.string).evalStr(env);
+    public String evalStr(Scope scope) {
+        return eval(scope).expect(Type.string).evalStr(scope);
     }
 
     @Override

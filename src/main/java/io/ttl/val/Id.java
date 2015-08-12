@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public class Id implements Val {
@@ -32,22 +31,22 @@ public class Id implements Val {
     }
 
     @Override
-    public Val eval(Env env) {
-        return env.val(name);
+    public Val eval(Scope scope) {
+        return scope.val(name);
     }
 
     @Override
-    public Double evalNum(Env env) {
-        Val v = env.val(name);
+    public Double evalNum(Scope scope) {
+        Val v = scope.val(name);
         v.expect(Type.num);
-        return v.evalNum(env);
+        return v.evalNum(scope);
     }
 
     @Override
-    public String evalStr(Env env) {
-        Val v = env.val(name);
+    public String evalStr(Scope scope) {
+        Val v = scope.val(name);
         v.expect(Type.string);
-        return v.evalStr(env);
+        return v.evalStr(scope);
     }
 
     @Override

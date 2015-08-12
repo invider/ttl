@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public abstract class SysFun implements Val {
@@ -30,21 +29,21 @@ public abstract class SysFun implements Val {
         return false;
     }
 
-    protected abstract Val syscall(Env env);
+    protected abstract Val syscall(Scope scope);
 
     @Override
-    public Val eval(Env env) {
-        return syscall(env);
+    public Val eval(Scope scope) {
+        return syscall(scope);
     }
 
     @Override
-    public Double evalNum(Env env) {
-        return eval(env).expect(Type.num).evalNum(env);
+    public Double evalNum(Scope scope) {
+        return eval(scope).expect(Type.num).evalNum(scope);
     }
 
     @Override
-    public String evalStr(Env env) {
-        return eval(env).expect(Type.string).evalStr(env);
+    public String evalStr(Scope scope) {
+        return eval(scope).expect(Type.string).evalStr(scope);
     }
 
     @Override

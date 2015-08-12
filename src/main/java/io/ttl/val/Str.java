@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public class Str implements Val {
@@ -32,12 +31,12 @@ public class Str implements Val {
     }
 
     @Override
-    public Val eval(Env env) {
+    public Val eval(Scope scope) {
         return this;
     }
 
     @Override
-    public Double evalNum(Env env) {
+    public Double evalNum(Scope scope) {
         try {
             return Double.parseDouble(val.trim());
         } catch (NumberFormatException e) {
@@ -47,7 +46,7 @@ public class Str implements Val {
     }
 
     @Override
-    public String evalStr(Env env) {
+    public String evalStr(Scope scope) {
         return val;
     }
 

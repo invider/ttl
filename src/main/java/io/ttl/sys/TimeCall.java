@@ -1,6 +1,6 @@
 package io.ttl.sys;
 
-import io.ttl.Env;
+import io.ttl.val.Scope;
 import io.ttl.val.Str;
 import io.ttl.val.SysFun;
 import io.ttl.val.Val;
@@ -14,7 +14,7 @@ public class TimeCall extends SysFun {
     }
 
     @Override
-    protected Val syscall(Env env) {
+    protected Val syscall(Scope scope) {
         return new Str((new Date()).toString());
     }
 

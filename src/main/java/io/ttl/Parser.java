@@ -4,14 +4,26 @@ import io.ttl.val.*;
 
 public class Parser {
 
-    private Env env;
+    private Scope scope;
 
     private Lex lex;
 
-    public Parser(Env env, Lex lex) {
-        this.env = env;
+    public Parser(Scope scope, Lex lex) {
+        this.scope = scope;
         this.lex = lex;
     }
+
+    // BASIC SYNTAX
+    // expr ::= factorlevel moreterms
+    // moreterms ::= + factorlevel moreterms
+    //               | - factorlevel moreterms
+    //               | <E>
+    // factorlevel ::= atom morefactors
+    // morefactors ::= * atom morefactors
+    //                 | / atom morefactors
+    //                 | % atom morefactors
+    //                 | <E>
+    // atom ::= <number> | <string> | <id> | (expr)
 
     // FULL SYNTAX
     // flow ::= expr moreflow
@@ -42,21 +54,18 @@ public class Parser {
     //                 / not morefactors |
     //                 % not morefactors |
     //                 <E>
-    // not ::= atom | !atom
-    // atom ::= <number> | <string> callmaybe | <id> callmaybe | (flow)
+    // not ::= dot | !dot
+    // dot ::= atom moredot
+    // moredot ::= . dot | .. dot | <E>
+    // atom ::= <number>
+    //          | <string> callmaybe
+    //          | <id> callmaybe
+    //          | (flow)
+    //          | [flow]
+    //          | .
+    //          | ..
     // callmaybe ::= (flow) | :expr | <E>
 
-    // BASIC SYNTAX
-    // expr ::= factorlevel moreterms
-    // moreterms ::= + factorlevel moreterms
-    //               | - factorlevel moreterms
-    //               | <E>
-    // factorlevel ::= atom morefactors
-    // morefactors ::= * atom morefactors
-    //                 | / atom morefactors
-    //                 | % atom morefactors
-    //                 | <E>
-    // atom ::= <number> | <string> | <id> | (expr)
     public Val parse() {
         return flow();
     }
@@ -190,10 +199,26 @@ public class Parser {
     private Val not() {
         Token t = lex.nextToken();
         if (t.matchOperator("!")) {
-            return new Uop('!', atom());
+            return new Uop('!', dot());
         } else {
             lex.returnToken();
-            return atom();
+            return dot();
+        }
+    }
+
+    private Val dot() {
+        return moredot(atom());
+    }
+
+    private Val moredot(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator(".")) {
+            return new Op(".", lval, dot());
+        } else if (t.matchOperator("..")) {
+            return new Op("..", lval, dot());
+        } else {
+            lex.returnToken();
+            return lval;
         }
     }
 
@@ -209,9 +234,20 @@ public class Parser {
             Val v = flow();
             t = lex.nextToken();
             if (!t.matchOperator(")")) {
-                throw new EvalException("lexical error: ) was expected");
+                throw new EvalException("syntax error: ) was expected");
             }
             return v;
+        } else if (t.matchOperator("[")) {
+            Val v = flow();
+            t = lex.nextToken();
+            if (!t.matchOperator("]")) {
+                throw new EvalException("syntax error: ] was expected");
+            }
+            return new Block(v);
+        } else if (t.matchOperator(".")) {
+            return new Uop('.', expr());
+        } else if (t.matchOperator("..")) {
+            return new Uop('D', expr());
         } else {
             lex.returnToken();
             return Nil.NIL;

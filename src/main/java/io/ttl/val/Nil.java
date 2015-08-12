@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public class Nil implements Val {
@@ -29,17 +28,17 @@ public class Nil implements Val {
     }
 
     @Override
-    public Val eval(Env env) {
+    public Val eval(Scope scope) {
         return this;
     }
 
     @Override
-    public Double evalNum(Env env) {
+    public Double evalNum(Scope scope) {
         throw new EvalException("number is expected, but NIL is found");
     }
 
     @Override
-    public String evalStr(Env env) {
+    public String evalStr(Scope scope) {
         throw new EvalException("string is expected, but NIL is found");
     }
 

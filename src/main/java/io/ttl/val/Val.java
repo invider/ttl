@@ -1,13 +1,11 @@
 package io.ttl.val;
 
-import io.ttl.Env;
-
 public interface Val {
 
     public static final Val TRUE = new Num(1d);
 
     public enum Type {
-        nil, num, string, id, op, fun, sys, group
+        nil, num, string, id, op, fun, sys, group, scope
     }
 
     public Val expect(Type t);
@@ -16,11 +14,11 @@ public interface Val {
 
     public boolean isAtom();
 
-    public Val eval(Env env);
+    public Val eval(Scope scope);
 
-    public Double evalNum(Env env);
+    public Double evalNum(Scope scope);
 
-    public String evalStr(Env env);
+    public String evalStr(Scope scope);
 
     public String toTree();
 }

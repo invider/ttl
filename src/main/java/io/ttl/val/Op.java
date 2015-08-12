@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public class Op implements Val {
@@ -34,10 +33,10 @@ public class Op implements Val {
         return false;
     }
 
-    private Val comp(Env env) {
+    private Val comp(Scope scope) {
         if (lval.getType() == Type.num) {
-            double ld = lval.evalNum(env);
-            double rd = rval.evalNum(env);
+            double ld = lval.evalNum(scope);
+            double rd = rval.evalNum(scope);
             switch(op) {
                 case "<": return (ld < rd)? Val.TRUE : Nil.NIL;
                 case "<=": return (ld <= rd)? Val.TRUE : Nil.NIL;
@@ -47,8 +46,8 @@ public class Op implements Val {
                 case "<>": return (ld != rd)? Val.TRUE : Nil.NIL;
             }
         } else if (lval.getType() == Type.string) {
-            String ls = lval.evalStr(env);
-            String rs = rval.evalStr(env);
+            String ls = lval.evalStr(scope);
+            String rs = rval.evalStr(scope);
             switch(op) {
                 case "<": return (ls.compareTo(rs) < 0)? Val.TRUE : Nil.NIL;
                 case "<=": return (ls.compareTo(rs) <= 0)? Val.TRUE : Nil.NIL;
@@ -65,14 +64,14 @@ public class Op implements Val {
     }
 
     @Override
-    public Val eval(Env env) {
+    public Val eval(Scope scope) {
         switch (op) {
             case "+":
-                Val lres = lval.eval(env);
+                Val lres = lval.eval(scope);
                 if (lres.getType() == Type.string) {
-                    return new Str(lres.evalStr(env) + rval.evalStr(env));
+                    return new Str(lres.evalStr(scope) + rval.evalStr(scope));
                 } else if (lres.getType() == Type.num) {
-                    return new Num(lres.evalNum(env) + rval.evalNum(env));
+                    return new Num(lres.evalNum(scope) + rval.evalNum(scope));
                 } else if (lres.getType() == Type.nil) {
                     return Nil.NIL;
                 } else {
@@ -80,46 +79,63 @@ public class Op implements Val {
                         + lval.toString() + " + " + rval.toString());
                 }
             case "-":
-                return new Num(lval.evalNum(env) - rval.evalNum(env));
+                return new Num(lval.evalNum(scope) - rval.evalNum(scope));
             case "*":
-                return new Num(lval.evalNum(env) * rval.evalNum(env));
+                return new Num(lval.evalNum(scope) * rval.evalNum(scope));
             case "/":
-                return new Num(lval.evalNum(env) / rval.evalNum(env));
+                return new Num(lval.evalNum(scope) / rval.evalNum(scope));
             case "%":
-                return new Num(lval.evalNum(env) % rval.evalNum(env));
+                return new Num(lval.evalNum(scope) % rval.evalNum(scope));
             case ":":
                 Id id = (Id)lval.expect(Type.id);
-                Val val = rval.eval(env);
-                env.set(id.name, val);
+                Val val = rval.eval(scope);
+                scope.set(id.name, val);
                 return val;
             case "<":case "<=":case ">":case ">=":
             case "=":case "<>":
-                return comp(env);
+                return comp(scope);
             case "&&":
-                Val lp = lval.eval(env);
+                Val lp = lval.eval(scope);
                 if (lp.getType() == Type.nil) return Nil.NIL;
-                Val rp = rval.eval(env);
+                Val rp = rval.eval(scope);
                 if (rp.getType() == Type.nil) return Nil.NIL;
                 return Val.TRUE;
             case "||":
-                lp = lval.eval(env);
+                lp = lval.eval(scope);
                 if (lp.getType() != Type.nil) return Val.TRUE;
-                rp = rval.eval(env);
+                rp = rval.eval(scope);
                 if (rp.getType() != Type.nil) return Val.TRUE;
                 return Nil.NIL;
+            case ".":
+                lres = lval.eval(scope);
+                if (lres.getType() != Type.scope) {
+                    throw new EvalException("operator . can't be applied to [" + lres + "]");
+                }
+                Scope context = (Scope)lres;
+                return rval.eval(context);
+            case "..":
+                lres = lval.eval(scope);
+                if (lres.getType() != Type.scope) {
+                    throw new EvalException("operator . can't be applied to [" + lres + "]");
+                }
+                context = ((Scope)lres).getParent();
+                if (context == null) {
+                    throw new EvalException("no parent scope found for " + lres);
+                }
+                return rval.eval(context);
             default:
                 throw new EvalException("unknown operator: " + op);
         }
     }
 
     @Override
-    public Double evalNum(Env env) {
-        return eval(env).expect(Type.num).evalNum(env);
+    public Double evalNum(Scope scope) {
+        return eval(scope).expect(Type.num).evalNum(scope);
     }
 
     @Override
-    public String evalStr(Env env) {
-        return eval(env).expect(Type.string).evalStr(env);
+    public String evalStr(Scope scope) {
+        return eval(scope).expect(Type.string).evalStr(scope);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package io.ttl.sys;
 
-import io.ttl.Env;
+import io.ttl.val.Scope;
 import io.ttl.val.Nil;
 import io.ttl.val.SysFun;
 import io.ttl.val.Val;
@@ -12,7 +12,7 @@ public class ExitCall extends SysFun {
     }
 
     @Override
-    protected Val syscall(Env env) {
+    protected Val syscall(Scope scope) {
         System.exit(0);
         return Nil.NIL;
     }

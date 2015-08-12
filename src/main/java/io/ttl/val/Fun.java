@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public class Fun implements Val {
@@ -32,15 +31,15 @@ public class Fun implements Val {
     }
 
     @Override
-    public Val eval(Env env) {
-        Val call = id.eval(env);
+    public Val eval(Scope scope) {
+        Val call = id.eval(scope);
         if (call.getType() == Type.sys) {
-            Env funScope = new Env(env);
+            Scope funScope = new Scope(scope);
             Val pv = params.eval(funScope);
             return call.eval(funScope);
         } else {
-            String src = call.expect(Type.string).evalStr(env);
-            Env funScope = new Env(env);
+            String src = call.expect(Type.string).evalStr(scope);
+            Scope funScope = new Scope(scope);
             Val pv = params.eval(funScope);
             return funScope.eval(src);
         }
@@ -48,13 +47,13 @@ public class Fun implements Val {
 
 
     @Override
-    public Double evalNum(Env env) {
-        return eval(env).expect(Type.num).evalNum(env);
+    public Double evalNum(Scope scope) {
+        return eval(scope).expect(Type.num).evalNum(scope);
     }
 
     @Override
-    public String evalStr(Env env) {
-        return eval(env).expect(Type.string).evalStr(env);
+    public String evalStr(Scope scope) {
+        return eval(scope).expect(Type.string).evalStr(scope);
     }
 
     @Override

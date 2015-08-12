@@ -1,6 +1,5 @@
 package io.ttl.val;
 
-import io.ttl.Env;
 import io.ttl.EvalException;
 
 public class If implements Val {
@@ -39,24 +38,24 @@ public class If implements Val {
     }
 
     @Override
-    public Val eval(Env env) {
-        Val cv = cval.eval(env);
+    public Val eval(Scope scope) {
+        Val cv = cval.eval(scope);
         if (cv.getType() != Type.nil) {
-            return tval.eval(env);
+            return tval.eval(scope);
         } else {
             if (fval == null) return Nil.NIL;
-            return fval.eval(env);
+            return fval.eval(scope);
         }
     }
 
     @Override
-    public Double evalNum(Env env) {
-        return eval(env).expect(Type.num).evalNum(env);
+    public Double evalNum(Scope scope) {
+        return eval(scope).expect(Type.num).evalNum(scope);
     }
 
     @Override
-    public String evalStr(Env env) {
-        return eval(env).expect(Type.string).evalStr(env);
+    public String evalStr(Scope scope) {
+        return eval(scope).expect(Type.string).evalStr(scope);
     }
 
     @Override
