@@ -216,7 +216,7 @@ public class Parser {
             }
             return callmaybe(new Id("" + t.value));
         } else if (t.isOperator(".")) {
-            return new Scope(atom());
+            return new Frame(atom());
         } else if (t.isOperator("..")) {
             return new Host(atom());
         }

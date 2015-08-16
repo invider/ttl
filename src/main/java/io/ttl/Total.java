@@ -20,7 +20,6 @@ public class Total {
                 System.out.print("> ");
                 String line = br.readLine().trim();
                 if (line.length() == 0) continue;
-                if (line.toLowerCase().equals("exit")) break;
                 String res = eval.exec(line);
                 System.out.println("= " + res);
             } catch (IOException e) {

@@ -1,8 +1,8 @@
 package io.ttl.val;
 
-public class Scope extends Env implements Val {
+public class Frame extends Env implements Val {
 
-    public Scope(Val eval) {
+    public Frame(Val eval) {
         this.eval = eval;
     }
 

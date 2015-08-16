@@ -1,11 +1,20 @@
 package io.ttl;
 
+import io.ttl.sys.Exit;
 import io.ttl.val.*;
 
 import java.io.Reader;
 import java.io.StringReader;
 
 public class Calc extends Env implements Eval {
+
+    public Calc() {
+        def("exit", new Exit());
+    }
+
+    private void def(String name, Fun fun) {
+        set(name, fun);
+    }
 
     @Override
     public String exec(String src) {
@@ -20,8 +29,8 @@ public class Calc extends Env implements Eval {
 
         try {
             res = (new Parser(lex)).parse();
-            System.out.println("# " + res);
-            System.out.println("% " + res.toTree());
+            //System.out.println("# " + res);
+            //System.out.println("% " + res.toTree());
         } catch (EvalException e) {
             e.setSrc(lex.getCurrentLine());
             throw e;
