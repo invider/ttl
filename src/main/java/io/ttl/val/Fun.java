@@ -38,7 +38,11 @@ public class Fun implements Val {
             Val pv = params.eval(funScope);
             return call.eval(funScope);
         } else {
-            String src = call.expect(Type.string).evalStr(scope);
+            if (call.getType() != Type.string) {
+                throw new EvalException("function body was expected, but ["
+                        + call + "] is found");
+            }
+            String src = call.evalStr(scope);
             Scope funScope = new Scope(scope);
             Val pv = params.eval(funScope);
             return funScope.eval(src);

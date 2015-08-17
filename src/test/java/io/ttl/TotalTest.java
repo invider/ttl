@@ -5,7 +5,7 @@ import org.junit.Test;
 
 public class TotalTest {
 
-    Scope scope = new Calc();
+    Scope scope = new REPL();
 
     private double e(String str) {
         String res = scope.exec(str).trim();

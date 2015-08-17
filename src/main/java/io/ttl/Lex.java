@@ -78,16 +78,7 @@ public class Lex {
             switch(state) {
                 case base:
                     if (c == 0) return new Token(Token.Type.eof);
-                    if (c == 0x0A) {
-                        lineBuf = new StringBuilder();
-                        return new Token(Token.Type.eol);
-                    }
-                    if (c == 0x0D) {
-                        match((char)0x0A);
-                        lineBuf = new StringBuilder();
-                        return new Token(Token.Type.eol);
-                    }
-                    if (c == ' ') ;
+                    if (c == ' ' || c == 0x0D || c == 0x0A) ;
                     else if (c >= '0' && c <= '9') {
                         state = State.number;
                         tokenBuffer = new StringBuilder("");
@@ -188,9 +179,8 @@ public class Lex {
                     }
                     break;
                 case string:
-                    if (c == 0 || c == 0x0A || c == 0x0D) {
-                        throw new EvalException(
-                                "lexical error: unexpected end of string");
+                    if (c == 0) {
+                        throw new EolException();
                     }
                     if (c == '\'') {
                         if (match('\'')) {

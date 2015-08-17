@@ -9,6 +9,8 @@ public class Scope implements Val {
 
     private Scope parent;
 
+    protected Map<String, Val> map = new ConcurrentHashMap<>();
+
     public Scope() {
         this.parent = null;
     }
@@ -16,8 +18,6 @@ public class Scope implements Val {
     public Scope(Scope parent) {
         this.parent = parent;
     }
-
-    protected Map<String, Val> map = new ConcurrentHashMap<>();
 
     public Scope getParent() {
         return parent;
@@ -31,9 +31,13 @@ public class Scope implements Val {
         if (name.startsWith("_") && map.containsKey(name)) {
             throw new EvalException("constant [" + name + "] is already defined");
         }
-        map.put(name, val);
-        if (val instanceof Scope) {
-            ((Scope)val).setParent(this);
+        if (val.getType() != Type.nil) {
+            map.put(name, val);
+            if (val instanceof Scope) {
+                ((Scope) val).setParent(this);
+            }
+        } else {
+            map.remove(name);
         }
     }
 
