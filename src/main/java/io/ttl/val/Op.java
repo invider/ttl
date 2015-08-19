@@ -33,10 +33,10 @@ public class Op implements Val {
         return false;
     }
 
-    private Val comp(Scope scope) {
+    private Val comp(Frame frame) {
         if (lval.getType() == Type.num) {
-            double ld = lval.evalNum(scope);
-            double rd = rval.evalNum(scope);
+            double ld = lval.evalNum(frame);
+            double rd = rval.evalNum(frame);
             switch(op) {
                 case "<": return (ld < rd)? Val.TRUE : Nil.NIL;
                 case "<=": return (ld <= rd)? Val.TRUE : Nil.NIL;
@@ -46,8 +46,8 @@ public class Op implements Val {
                 case "<>": return (ld != rd)? Val.TRUE : Nil.NIL;
             }
         } else if (lval.getType() == Type.string) {
-            String ls = lval.evalStr(scope);
-            String rs = rval.evalStr(scope);
+            String ls = lval.evalStr(frame);
+            String rs = rval.evalStr(frame);
             switch(op) {
                 case "<": return (ls.compareTo(rs) < 0)? Val.TRUE : Nil.NIL;
                 case "<=": return (ls.compareTo(rs) <= 0)? Val.TRUE : Nil.NIL;
@@ -64,14 +64,14 @@ public class Op implements Val {
     }
 
     @Override
-    public Val eval(Scope scope) {
+    public Val eval(Frame frame) {
         switch (op) {
             case "+":
-                Val lres = lval.eval(scope);
+                Val lres = lval.eval(frame);
                 if (lres.getType() == Type.string) {
-                    return new Str(lres.evalStr(scope) + rval.evalStr(scope));
+                    return new Str(lres.evalStr(frame) + rval.evalStr(frame));
                 } else if (lres.getType() == Type.num) {
-                    return new Num(lres.evalNum(scope) + rval.evalNum(scope));
+                    return new Num(lres.evalNum(frame) + rval.evalNum(frame));
                 } else if (lres.getType() == Type.nil) {
                     return Nil.NIL;
                 } else {
@@ -79,48 +79,59 @@ public class Op implements Val {
                         + lval.toString() + " + " + rval.toString());
                 }
             case "-":
-                return new Num(lval.evalNum(scope) - rval.evalNum(scope));
+                return new Num(lval.evalNum(frame) - rval.evalNum(frame));
             case "*":
-                return new Num(lval.evalNum(scope) * rval.evalNum(scope));
+                return new Num(lval.evalNum(frame) * rval.evalNum(frame));
             case "/":
-                return new Num(lval.evalNum(scope) / rval.evalNum(scope));
+                return new Num(lval.evalNum(frame) / rval.evalNum(frame));
             case "%":
-                return new Num(lval.evalNum(scope) % rval.evalNum(scope));
+                return new Num(lval.evalNum(frame) % rval.evalNum(frame));
             case ":":
-                Id id = (Id)lval.expect(Type.id);
-                Val val = rval.eval(scope);
-                scope.set(id.name, val);
-                return val;
+                if (lval.getType() == Type.id) {
+                    Id id = (Id)lval;
+                    Val val = rval.eval(frame);
+                    frame.set(id.name, val);
+                    return val;
+                } else {
+                    try {
+                        long i = lval.evalNum(frame).longValue();
+                        Val val = rval.eval(frame);
+                        frame.set(i, val);
+                        return val;
+                    } catch (EvalException e) {
+                        new EvalException("id or number is expected", e);
+                    }
+                }
             case "<":case "<=":case ">":case ">=":
             case "=":case "<>":
-                return comp(scope);
+                return comp(frame);
             case "&&":
-                Val lp = lval.eval(scope);
+                Val lp = lval.eval(frame);
                 if (lp.getType() == Type.nil) return Nil.NIL;
-                Val rp = rval.eval(scope);
+                Val rp = rval.eval(frame);
                 if (rp.getType() == Type.nil) return Nil.NIL;
                 return Val.TRUE;
             case "||":
-                lp = lval.eval(scope);
+                lp = lval.eval(frame);
                 if (lp.getType() != Type.nil) return Val.TRUE;
-                rp = rval.eval(scope);
+                rp = rval.eval(frame);
                 if (rp.getType() != Type.nil) return Val.TRUE;
                 return Nil.NIL;
             case ".":
-                lres = lval.eval(scope);
-                if (lres.getType() != Type.scope) {
+                lres = lval.eval(frame);
+                if (lres.getType() != Type.frame) {
                     throw new EvalException("operator . can't be applied to [" + lres + "]");
                 }
-                Scope context = (Scope)lres;
+                Frame context = (Frame)lres;
                 return rval.eval(context);
             case "..":
-                lres = lval.eval(scope);
-                if (lres.getType() != Type.scope) {
+                lres = lval.eval(frame);
+                if (lres.getType() != Type.frame) {
                     throw new EvalException("operator . can't be applied to [" + lres + "]");
                 }
-                context = ((Scope)lres).getParent();
+                context = ((Frame)lres).getParent();
                 if (context == null) {
-                    throw new EvalException("no parent scope found for " + lres);
+                    throw new EvalException("no parent frame found for " + lres);
                 }
                 return rval.eval(context);
             default:
@@ -129,13 +140,17 @@ public class Op implements Val {
     }
 
     @Override
-    public Double evalNum(Scope scope) {
-        return eval(scope).expect(Type.num).evalNum(scope);
+    public Double evalNum(Frame frame) {
+        return eval(frame).expect(Type.num).evalNum(frame);
     }
 
     @Override
-    public String evalStr(Scope scope) {
-        return eval(scope).expect(Type.string).evalStr(scope);
+    public String evalStr(Frame frame) {
+        return eval(frame).expect(Type.string).evalStr(frame);
+    }
+
+    public boolean matchOperator(String op) {
+        return this.op.equals(op);
     }
 
     @Override

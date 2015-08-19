@@ -29,21 +29,21 @@ public abstract class SysFun implements Val {
         return false;
     }
 
-    protected abstract Val syscall(Scope scope);
+    protected abstract Val syscall(Frame frame);
 
     @Override
-    public Val eval(Scope scope) {
-        return syscall(scope);
+    public Val eval(Frame frame) {
+        return syscall(frame);
     }
 
     @Override
-    public Double evalNum(Scope scope) {
-        return eval(scope).expect(Type.num).evalNum(scope);
+    public Double evalNum(Frame frame) {
+        return eval(frame).expect(Type.num).evalNum(frame);
     }
 
     @Override
-    public String evalStr(Scope scope) {
-        return eval(scope).expect(Type.string).evalStr(scope);
+    public String evalStr(Frame frame) {
+        return eval(frame).expect(Type.string).evalStr(frame);
     }
 
     @Override

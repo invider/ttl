@@ -33,39 +33,43 @@ public class Uop implements Val {
     }
 
     @Override
-    public Val eval(Scope scope) {
+    public Val eval(Frame frame) {
         switch(op) {
             case '!':
-                Val lv = lval.eval(scope);
+                Val lv = lval.eval(frame);
                 if (lv.getType() == Type.nil) return Val.TRUE;
                 else return Nil.NIL;
             case '.':
                 if(lval.getType() == Type.nil) {
-                    return scope;
+                    return frame;
                 }
-                return lval.eval(scope);
+                return lval.eval(frame);
             case 'D':
-                Scope parent = scope.getParent();
+                Frame parent = frame.getParent();
                 if (parent == null) {
-                    throw new EvalException("can't find parent for " + scope);
+                    throw new EvalException("can't find parent for " + frame);
                 }
                 if (lval.getType() == Type.nil) {
                     return parent;
                 }
                 return lval.eval(parent);
+            case '#':
+                return frame.val(lval.eval(frame)
+                        .expect(Type.num)
+                        .evalNum(frame).longValue());
             default:
                 throw new EvalException("unknown operator: " + op);
         }
     }
 
     @Override
-    public Double evalNum(Scope scope) {
-        return eval(scope).expect(Type.num).evalNum(scope);
+    public Double evalNum(Frame frame) {
+        return eval(frame).expect(Type.num).evalNum(frame);
     }
 
     @Override
-    public String evalStr(Scope scope) {
-        return eval(scope).expect(Type.string).evalStr(scope);
+    public String evalStr(Frame frame) {
+        return eval(frame).expect(Type.string).evalStr(frame);
     }
 
     @Override

@@ -4,12 +4,12 @@ import io.ttl.val.*;
 
 public class Parser {
 
-    private Scope scope;
+    private Frame frame;
 
     private Lex lex;
 
-    public Parser(Scope scope, Lex lex) {
-        this.scope = scope;
+    public Parser(Frame frame, Lex lex) {
+        this.frame = frame;
         this.lex = lex;
     }
 
@@ -57,14 +57,16 @@ public class Parser {
     // not ::= dot | !dot
     // dot ::= atom moredot
     // moredot ::= . dot | .. dot | <E>
-    // atom ::= <number>
+    // associate ::= atom | atom:expr
+    // atom ::= <number> callmaybe
     //          | <string> callmaybe
     //          | <id> callmaybe
-    //          | (flow)
+    //          | #atom
+    //          | (flow) callmaybe
     //          | [flow]
     //          | .
     //          | ..
-    // callmaybe ::= (flow) | :expr | <E>
+    // callmaybe ::= (flow) | <E>
 
     public Val parse() {
         return flow();
@@ -207,7 +209,7 @@ public class Parser {
     }
 
     private Val dot() {
-        return moredot(atom());
+        return moredot(associate());
     }
 
     private Val moredot(Val lval) {
@@ -222,14 +224,27 @@ public class Parser {
         }
     }
 
+    private Val associate() {
+        Val lval = atom();
+        Token t = lex.nextToken();
+        if (t.matchOperator(":")) {
+            return new Op(":", lval, expr());
+        } else {
+            lex.returnToken();
+            return lval;
+        }
+    }
+
     private Val atom() {
         Token t = lex.nextToken();
         if (t.type == Token.Type.number) {
-            return new Num((Double)t.value);
+            return callmaybe(new Num((Double)t.value));
         } else if (t.type == Token.Type.string) {
             return callmaybe(new Str("" + t.value));
         } else if (t.type == Token.Type.id) {
             return callmaybe(new Id("" + t.value));
+        } else if (t.matchOperator("#")) {
+            return callmaybe(new Uop('#', atom()));
         } else if (t.matchOperator("(")) {
             Val v = flow();
             t = lex.nextToken();
@@ -256,9 +271,7 @@ public class Parser {
 
     private Val callmaybe(Val lval) {
         Token t = lex.nextToken();
-        if (t.matchOperator(":")) {
-            return new Op(":", lval, expr());
-        } else if (t.matchOperator("(")) {
+        if (t.matchOperator("(")) {
             Val rval = flow();
             t = lex.nextToken();
             if (!t.matchOperator(")")) {

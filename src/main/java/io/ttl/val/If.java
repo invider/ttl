@@ -38,24 +38,24 @@ public class If implements Val {
     }
 
     @Override
-    public Val eval(Scope scope) {
-        Val cv = cval.eval(scope);
+    public Val eval(Frame frame) {
+        Val cv = cval.eval(frame);
         if (cv.getType() != Type.nil) {
-            return tval.eval(scope);
+            return tval.eval(frame);
         } else {
             if (fval == null) return Nil.NIL;
-            return fval.eval(scope);
+            return fval.eval(frame);
         }
     }
 
     @Override
-    public Double evalNum(Scope scope) {
-        return eval(scope).expect(Type.num).evalNum(scope);
+    public Double evalNum(Frame frame) {
+        return eval(frame).expect(Type.num).evalNum(frame);
     }
 
     @Override
-    public String evalStr(Scope scope) {
-        return eval(scope).expect(Type.string).evalStr(scope);
+    public String evalStr(Frame frame) {
+        return eval(frame).expect(Type.string).evalStr(frame);
     }
 
     @Override

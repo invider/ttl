@@ -1,13 +1,14 @@
 package io.ttl;
 
-import io.ttl.sys.ExitCall;
-import io.ttl.sys.TimeCall;
+import io.ttl.sys.ExitFun;
+import io.ttl.sys.PrintFun;
+import io.ttl.sys.TimeFun;
 import io.ttl.val.*;
 
 import java.io.Reader;
 import java.io.StringReader;
 
-public class REPL extends Scope {
+public class REPL extends Frame {
 
     public boolean multiline = false;
 
@@ -16,8 +17,9 @@ public class REPL extends Scope {
     public REPL() {
         this.set("version", new Str("Version 0.2"));
         this.set("_pi", new Num(3.14d));
-        defun(new ExitCall());
-        defun(new TimeCall());
+        defun(new ExitFun());
+        defun(new TimeFun());
+        defun(new PrintFun());
     }
 
     private void defun(SysFun sysfun) {
@@ -25,7 +27,7 @@ public class REPL extends Scope {
     }
 
     @Override
-    public Val eval(String src, Scope scope) {
+    public Val eval(String src, Frame frame) {
         try {
             if (multiline) {
                 src = srcBuffer + "\n" + src;
@@ -37,7 +39,7 @@ public class REPL extends Scope {
             multiline = false;
             //System.out.println("< " + val);
             //System.out.println("& " + val.toTree());
-            return val.eval(scope);
+            return val.eval(frame);
         } catch (EolException e) {
             srcBuffer = src;
             multiline = true;

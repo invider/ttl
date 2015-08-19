@@ -5,7 +5,7 @@ public interface Val {
     public static final Val TRUE = new Num(1d);
 
     public enum Type {
-        nil, num, string, id, op, fun, sys, group, scope
+        nil, num, string, id, op, fun, sys, group, frame
     }
 
     public Val expect(Type t);
@@ -14,11 +14,11 @@ public interface Val {
 
     public boolean isAtom();
 
-    public Val eval(Scope scope);
+    public Val eval(Frame frame);
 
-    public Double evalNum(Scope scope);
+    public Double evalNum(Frame frame);
 
-    public String evalStr(Scope scope);
+    public String evalStr(Frame frame);
 
     public String toTree();
 }

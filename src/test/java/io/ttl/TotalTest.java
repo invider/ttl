@@ -1,14 +1,14 @@
 package io.ttl;
 
-import io.ttl.val.Scope;
+import io.ttl.val.Frame;
 import org.junit.Test;
 
 public class TotalTest {
 
-    Scope scope = new REPL();
+    Frame frame = new REPL();
 
     private double e(String str) {
-        String res = scope.exec(str).trim();
+        String res = frame.exec(str).trim();
         return Double.parseDouble(res);
     }
 

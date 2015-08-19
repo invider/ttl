@@ -31,17 +31,17 @@ public class Num implements Val {
     }
 
     @Override
-    public Val eval(Scope scope) {
+    public Val eval(Frame frame) {
         return this;
     }
 
     @Override
-    public Double evalNum(Scope scope) {
+    public Double evalNum(Frame frame) {
         return val;
     }
 
     @Override
-    public String evalStr(Scope scope) {
+    public String evalStr(Frame frame) {
         return "" + val;
     }
 

@@ -31,19 +31,23 @@ public class Group implements Val {
     }
 
     @Override
-    public Val eval(Scope scope) {
-        head.eval(scope);
-        return tail.eval(scope);
+    public Val eval(Frame frame) {
+        if (head.getType() == Type.op && ((Op)head).matchOperator(":")) {
+            head.eval(frame); // name association side effect
+        } else {
+            frame.set(head.eval(frame)); // index association
+        }
+        return tail.eval(frame);
     }
 
     @Override
-    public Double evalNum(Scope scope) {
-        return eval(scope).expect(Type.num).evalNum(scope);
+    public Double evalNum(Frame frame) {
+        return eval(frame).expect(Type.num).evalNum(frame);
     }
 
     @Override
-    public String evalStr(Scope scope) {
-        return eval(scope).expect(Type.string).evalStr(scope);
+    public String evalStr(Frame frame) {
+        return eval(frame).expect(Type.string).evalStr(frame);
     }
 
     @Override

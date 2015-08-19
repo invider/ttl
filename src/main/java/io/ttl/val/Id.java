@@ -31,22 +31,22 @@ public class Id implements Val {
     }
 
     @Override
-    public Val eval(Scope scope) {
-        return scope.val(name);
+    public Val eval(Frame frame) {
+        return frame.val(name);
     }
 
     @Override
-    public Double evalNum(Scope scope) {
-        Val v = scope.val(name);
+    public Double evalNum(Frame frame) {
+        Val v = frame.val(name);
         v.expect(Type.num);
-        return v.evalNum(scope);
+        return v.evalNum(frame);
     }
 
     @Override
-    public String evalStr(Scope scope) {
-        Val v = scope.val(name);
+    public String evalStr(Frame frame) {
+        Val v = frame.val(name);
         v.expect(Type.string);
-        return v.evalStr(scope);
+        return v.evalStr(frame);
     }
 
     @Override

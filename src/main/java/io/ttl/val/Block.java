@@ -1,6 +1,6 @@
 package io.ttl.val;
 
-public class Block extends Scope {
+public class Block extends Frame {
 
     private Val val;
 
@@ -9,9 +9,13 @@ public class Block extends Scope {
     }
 
     @Override
-    public Val eval(Scope scope) {
-        Scope newScope = new Scope(scope);
-        val.eval(newScope);
-        return newScope;
+    public Val eval(Frame frame) {
+        Frame newFrame = new Frame(frame);
+        if (val.getType() == Type.op && ((Op)val).matchOperator(":")) {
+            val.eval(newFrame); // name association side effect
+        } else {
+            newFrame.set(val.eval(newFrame)); // associate with index
+        }
+        return newFrame;
     }
 }

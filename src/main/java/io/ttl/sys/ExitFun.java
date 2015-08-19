@@ -1,18 +1,18 @@
 package io.ttl.sys;
 
-import io.ttl.val.Scope;
+import io.ttl.val.Frame;
 import io.ttl.val.Nil;
 import io.ttl.val.SysFun;
 import io.ttl.val.Val;
 
-public class ExitCall extends SysFun {
+public class ExitFun extends SysFun {
 
-    public ExitCall() {
+    public ExitFun() {
         this.name = "exit";
     }
 
     @Override
-    protected Val syscall(Scope scope) {
+    protected Val syscall(Frame frame) {
         System.exit(0);
         return Nil.NIL;
     }
