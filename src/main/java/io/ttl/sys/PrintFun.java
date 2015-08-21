@@ -18,7 +18,7 @@ public class PrintFun extends SysFun{
         Map<Long, Val> map = frame.getNumMap();
         for (Long i: map.keySet()) {
             Val v = map.get(i);
-            System.out.println(v.toString());
+            System.out.println(v.evalStr(frame));
         }
         return Nil.NIL;
     }

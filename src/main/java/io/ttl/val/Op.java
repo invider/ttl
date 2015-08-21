@@ -34,8 +34,9 @@ public class Op implements Val {
     }
 
     private Val comp(Frame frame) {
-        if (lval.getType() == Type.num) {
-            double ld = lval.evalNum(frame);
+        Val lv = lval.eval(frame);
+        if (lv.getType() == Type.num) {
+            double ld = lv.evalNum(frame);
             double rd = rval.evalNum(frame);
             switch(op) {
                 case "<": return (ld < rd)? Val.TRUE : Nil.NIL;
@@ -45,8 +46,8 @@ public class Op implements Val {
                 case "=": return (ld == rd)? Val.TRUE : Nil.NIL;
                 case "<>": return (ld != rd)? Val.TRUE : Nil.NIL;
             }
-        } else if (lval.getType() == Type.string) {
-            String ls = lval.evalStr(frame);
+        } else if (lv.getType() == Type.string) {
+            String ls = lv.evalStr(frame);
             String rs = rval.evalStr(frame);
             switch(op) {
                 case "<": return (ls.compareTo(rs) < 0)? Val.TRUE : Nil.NIL;

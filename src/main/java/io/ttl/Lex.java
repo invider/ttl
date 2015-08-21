@@ -61,7 +61,7 @@ public class Lex {
     }
 
     private enum State {
-        base, id, string, number
+        base, id, string, dstring, number, comment, linecomment
     }
     private State state = State.base;
 
@@ -78,25 +78,31 @@ public class Lex {
             switch(state) {
                 case base:
                     if (c == 0) return new Token(Token.Type.eof);
-                    if (c == ' ' || c == 0x0D || c == 0x0A) ;
-                    else if (c >= '0' && c <= '9') {
+                    if (c == ' ' || c == 0x0D || c == 0x0A) {
+                    } else if (c == '#') {
+                        state = State.linecomment;
+                    } else if (c >= '0' && c <= '9') {
                         state = State.number;
                         tokenBuffer = new StringBuilder("");
                         tokenBuffer.append(c);
                     } else if ((c >= 'a' && c <= 'z')
                             || (c >= 'A' && c <= 'Z')
-                            || (c == '_')) {
+                            || (c == '_')
+                            || (c == '$')) {
                         state = State.id;
                         tokenBuffer = new StringBuilder("");
                         tokenBuffer.append(c);
                     } else if (c == '\'') {
                         state = State.string;
-                        tokenBuffer = new StringBuilder("");
+                        tokenBuffer = new StringBuilder();
+                    } else if (c == '"') {
+                        state = State.dstring;
+                        tokenBuffer = new StringBuilder();
                     } else {
                         switch(c) {
-                            case '+':case '-':case '*':case '/':case '%':
+                            case '+':case '*':case '%':
                             case '=':case '(':case ')':case '[':case ']':
-                            case ',':case ':':case '?':case '#':
+                            case ',':case ':':case '?':case '@':
                                 return new Token(
                                         Token.Type.operator, "" + c);
                             case '.':
@@ -104,6 +110,20 @@ public class Lex {
                                     return new Token(Token.Type.operator, "..");
                                 }
                                 return new Token(Token.Type.operator, ".");
+                            case '/':
+                                if (match('*')) {
+                                    state = State.comment;
+                                    break;
+                                } else {
+                                    return new Token(Token.Type.operator, "/");
+                                }
+                            case '-':
+                                if (match('-')) {
+                                    state = State.linecomment;
+                                    break;
+                                } else {
+                                    return new Token(Token.Type.operator, "-");
+                                }
                             case '<':
                                 if (match('=')) {
                                     return new Token(Token.Type.operator, "<=");
@@ -144,7 +164,9 @@ public class Lex {
                     if ((c >= 'a' && c <= 'z')
                             || (c >= 'A' && c <= 'Z')
                             || (c >= '0' && c <= '9')
-                            || (c == '_')) {
+                            || (c == '_')
+                            || (c == '$')
+                            || (c == '!')) {
                         tokenBuffer.append(c);
                     } else {
                         retc();
@@ -178,20 +200,68 @@ public class Lex {
                                 Double.parseDouble(tokenBuffer.toString()));
                     }
                     break;
-                case string:
+                case string: case dstring:
                     if (c == 0) {
                         throw new EolException();
                     }
-                    if (c == '\'') {
+                    if (c == '\\') {
+                        if (match('\'')) {
+                            tokenBuffer.append('\'');
+                        } else if (match('"')) {
+                            tokenBuffer.append('"');
+                        } else if (match('\\')) {
+                            tokenBuffer.append('\\');
+                        } else if (match('n')) {
+                            tokenBuffer.append('\n');
+                        } else if (match('t')) {
+                            tokenBuffer.append("\t");
+                        } else {
+                            StringBuilder hex = new StringBuilder();
+                            for (int i = 0; i < 4; i++) {
+                                c = getc();
+                                if ((c >= '0' && c <= '9')
+                                        || (c >= 'a' && c <= 'f')
+                                        || (c >= 'A' && c <= 'F')) {
+                                    hex.append(c);
+                                } else {
+                                    throw new EvalException(
+                                        "lexical error: hex number or correct escape symbol is expected after \\");
+                                }
+                            }
+                            tokenBuffer.append((char)Integer.parseInt(hex.toString(), 16));
+                        }
+                    } else if (state == State.string && c == '\'') {
                         if (match('\'')) {
                             tokenBuffer.append(c);
                         } else {
                             state = State.base;
                             return new Token(Token.Type.string,
-                                    tokenBuffer.toString());
+                                tokenBuffer.toString());
+                        }
+                    } else if (state == State.dstring && c == '"') {
+                        if (match('"')) {
+                            tokenBuffer.append('"');
+                        } else {
+                            state = State.base;
+                            return new Token(Token.Type.string,
+                                tokenBuffer.toString());
                         }
                     } else {
                         tokenBuffer.append(c);
+                    }
+                    break;
+                case comment:
+                    if (c == 0) {
+                        throw new EvalException("lexical error: multiline comment is supposed to be closed");
+                    }
+                    if (c == '*' && match('/')) {
+                        state = State.base;
+                    }
+                    break;
+                case linecomment:
+                    if (c == 0 || c == 0x0A || c == 0x0D) {
+                        retc();
+                        state = State.base;
                     }
                     break;
             }

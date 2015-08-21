@@ -1,4 +1,4 @@
 #!/bin/sh
 
-gradle run --console plain
+gradle test --continue run --console plain
 

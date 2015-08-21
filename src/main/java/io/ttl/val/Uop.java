@@ -53,7 +53,7 @@ public class Uop implements Val {
                     return parent;
                 }
                 return lval.eval(parent);
-            case '#':
+            case '@':
                 return frame.val(lval.eval(frame)
                         .expect(Type.num)
                         .evalNum(frame).longValue());

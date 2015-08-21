@@ -61,7 +61,7 @@ public class Parser {
     // atom ::= <number> callmaybe
     //          | <string> callmaybe
     //          | <id> callmaybe
-    //          | #atom
+    //          | @atom
     //          | (flow) callmaybe
     //          | [flow]
     //          | .
@@ -243,8 +243,8 @@ public class Parser {
             return callmaybe(new Str("" + t.value));
         } else if (t.type == Token.Type.id) {
             return callmaybe(new Id("" + t.value));
-        } else if (t.matchOperator("#")) {
-            return callmaybe(new Uop('#', atom()));
+        } else if (t.matchOperator("@")) {
+            return callmaybe(new Uop('@', atom()));
         } else if (t.matchOperator("(")) {
             Val v = flow();
             t = lex.nextToken();

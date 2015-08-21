@@ -61,15 +61,15 @@ public class Level1 extends LevelBase {
     @Test
     public void testBasicExpr() {
         ex("notavariable + anothermissingvariable");
-        assert !(e("2 + 2") == 5d);
-        assert e("2 + 2") == 4d;
-        assert e("2 + 2 * 3") == 8d;
+        assert !(ed("2 + 2") == 5d);
+        assert ed("2 + 2") == 4d;
+        assert ed("2 + 2 * 3") == 8d;
         // make things more complicated
-        assert e("2+2") == 4d;
-        assert e("2+2*4") == 10d;
-        assert e("2*(3+4) + 10") == 24d;
-        assert e("1+(1*1+(1+1)*1)") == 4d;
-        assert e("pi:3.14, 2*pi") == 6.28d;
+        assert ed("2+2") == 4d;
+        assert ed("2+2*4") == 10d;
+        assert ed("2*(3+4) + 10") == 24d;
+        assert ed("1+(1*1+(1+1)*1)") == 4d;
+        assert ed("pi:3.14, 2*pi") == 6.28d;
         assert repl.exec("hw: 'hello world'").equals("'hello world'");
     }
 }

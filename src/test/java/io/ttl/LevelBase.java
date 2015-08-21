@@ -1,10 +1,17 @@
 package io.ttl;
 
+import io.ttl.val.Nil;
+import io.ttl.val.Val;
+
 public class LevelBase {
 
     protected REPL repl = new REPL();
 
-    protected double e(String str) {
+    protected String e(String src) {
+        return repl.exec(src);
+    }
+
+    protected double ed(String str) {
         String res = repl.exec(str).trim();
         try {
             return Double.parseDouble(res);
@@ -14,16 +21,17 @@ public class LevelBase {
     }
 
     protected void eq(String src, double out) {
-        assert e(src) == out;
+        assert ed(src) == out;
     }
 
     protected void eq(String src, String out) {
-        String res = repl.exec(src).trim();
-        assert res.equals(out);
+        String str = repl.eval(src).evalStr(repl);
+        if (!str.equals(out)) throw new EvalException("string '"
+            + out + "' was expected, but [" + str + "] found");
     }
 
     protected void neq(String src, double out) {
-        assert e(src) != out;
+        assert ed(src) != out;
     }
 
     protected void neq(String src, String out) {
@@ -43,8 +51,7 @@ public class LevelBase {
      * expect nil
      */
     protected void nil(String src) {
-        String res = repl.exec(src).trim();
-        assert res.equals("<NIL>");
+        assert repl.eval(src).equals(Nil.NIL);
     }
 
     /**

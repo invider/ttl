@@ -1,0 +1,14 @@
+#!/bin/sh
+# test and show results in a browser
+
+gradle clean test
+
+URL='./build/reports/tests/index.html'
+if which xdg-open > /dev/null
+then
+    nohup xdg-open $URL > /dev/null 2>&1 &
+elif which gnome-open > /dev/null
+then
+    nohup gnome-open $URL > /dev/null 2>&1 &
+fi
+
