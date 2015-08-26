@@ -135,6 +135,10 @@ public class Op implements Val {
                     throw new EvalException("no parent frame found for " + lres);
                 }
                 return rval.eval(context);
+            case "::":
+                lp = lval.eval(frame);
+                rp = rval.eval(frame);
+                return new List(lp, rp);
             default:
                 throw new EvalException("unknown operator: " + op);
         }

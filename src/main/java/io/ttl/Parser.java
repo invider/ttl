@@ -29,12 +29,14 @@ public class Parser {
     // flow ::= expr moreflow
     // moreflow  ::= ,flow | <E>
     // expr ::= condlevel
-    // condlevel ::= orlevel morecond
+    // condlevel ::= listlevel morecond
     // morecond ::= ? expr
     //          | ? expr !! expr
     //          | ?~ expr
     //          | *~ expr
     //          | <E>
+    // listlevel ::= orlevel morelist
+    // morelist ::= :: listlevel | <E>
     // orlevel ::= andlevel moreor
     // moreor ::= || andlevel moreor | <E>
     // andlevel :: levelcomp moreand
@@ -79,7 +81,9 @@ public class Parser {
     private Val moreflow(Val lval) {
         Token t = lex.nextToken();
         if (t.matchOperator(",")) {
-            return new Group(lval, flow());
+            return new Group(lval, flow(), true);
+        } else if (t.matchOperator(";")) {
+            return new Group(lval, flow(), false);
         } else {
             lex.returnToken();
             return lval;
@@ -91,7 +95,7 @@ public class Parser {
     }
 
     private Val condlevel() {
-        return morecond(orlevel());
+        return morecond(listlevel());
     }
 
     private Val morecond(Val lval) {
@@ -106,6 +110,20 @@ public class Parser {
                 lex.returnToken();
                 return new If(lval, tval);
             }
+        } else {
+            lex.returnToken();
+            return lval;
+        }
+    }
+
+    private Val listlevel() {
+        return morelist(orlevel());
+    }
+
+    private Val morelist(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator("::")) {
+            return new Op("::", lval, listlevel());
         } else {
             lex.returnToken();
             return lval;

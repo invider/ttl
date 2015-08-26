@@ -102,7 +102,7 @@ public class Lex {
                         switch(c) {
                             case '+':case '*':case '%':
                             case '=':case '(':case ')':case '[':case ']':
-                            case ',':case ':':case '?':case '@':
+                            case ',':case ';':case '?':case '@':
                                 return new Token(
                                         Token.Type.operator, "" + c);
                             case '.':
@@ -110,6 +110,11 @@ public class Lex {
                                     return new Token(Token.Type.operator, "..");
                                 }
                                 return new Token(Token.Type.operator, ".");
+                            case ':':
+                                if (match(':')) {
+                                    return new Token(Token.Type.operator, "::");
+                                }
+                                return new Token(Token.Type.operator, ":");
                             case '/':
                                 if (match('*')) {
                                     state = State.comment;

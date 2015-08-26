@@ -4,11 +4,14 @@ import io.ttl.EvalException;
 
 public class Group implements Val {
 
+    private boolean indexing;
+
     private Val head, tail;
 
-    public Group(Val head, Val tail) {
+    public Group(Val head, Val tail, boolean indexing) {
         this.head = head;
         this.tail = tail;
+        this.indexing = indexing;
     }
 
     @Override
@@ -35,7 +38,11 @@ public class Group implements Val {
         if (head.getType() == Type.op && ((Op)head).matchOperator(":")) {
             head.eval(frame); // name association side effect
         } else {
-            frame.set(head.eval(frame)); // index association
+            if (indexing) {
+                frame.set(head.eval(frame)); // index association
+            } else {
+                head.eval(frame); // eval and forget
+            }
         }
         return tail.eval(frame);
     }
