@@ -5,17 +5,15 @@ import io.ttl.val.Str;
 import io.ttl.val.SysFun;
 import io.ttl.val.Val;
 
-import java.util.Date;
+public class TypeFunc extends SysFun {
 
-public class TimeFun extends SysFun {
-
-    public TimeFun() {
-        this.name = "time";
+    public TypeFunc() {
+        this.name = "type";
     }
 
     @Override
     protected Val syscall(Frame frame) {
-        return new Str((new Date()).toString());
+        Val val = frame.val(0l);
+        return new Str(val.getType().toString());
     }
-
 }

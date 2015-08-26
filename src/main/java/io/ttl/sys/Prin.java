@@ -7,10 +7,10 @@ import io.ttl.val.Val;
 
 import java.util.Map;
 
-public class PrintFun extends SysFun{
+public class Prin extends SysFun {
 
-    public PrintFun() {
-        this.name = "print";
+    public Prin() {
+        this.name = "prin";
     }
 
     @Override
@@ -18,7 +18,7 @@ public class PrintFun extends SysFun{
         Map<Long, Val> map = frame.getNumMap();
         for (Long i: map.keySet()) {
             Val v = map.get(i);
-            System.out.println(v.evalStr(frame));
+            System.out.print(v.evalStr(frame));
         }
         return Nil.NIL;
     }

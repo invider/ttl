@@ -5,9 +5,9 @@ import io.ttl.val.Nil;
 import io.ttl.val.SysFun;
 import io.ttl.val.Val;
 
-public class ExitFun extends SysFun {
+public class Exit extends SysFun {
 
-    public ExitFun() {
+    public Exit() {
         this.name = "exit";
     }
 

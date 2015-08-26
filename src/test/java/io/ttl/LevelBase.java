@@ -43,8 +43,7 @@ public class LevelBase {
      * expect value (true condition)
      */
     protected void val(String src) {
-        String res = repl.exec(src).trim();
-        assert !res.equals("<NIL>");
+        assert !repl.eval(src).equals(Nil.NIL);
     }
 
     /**
