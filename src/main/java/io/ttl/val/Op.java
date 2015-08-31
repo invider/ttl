@@ -128,13 +128,16 @@ public class Op implements Val {
             case "..":
                 lres = lval.eval(frame);
                 if (lres.getType() != Type.frame) {
-                    throw new EvalException("operator . can't be applied to [" + lres + "]");
+                    throw new EvalException(
+                            "operator . can't be applied to [" + lres + "]");
                 }
                 context = ((Frame)lres).getParent();
                 if (context == null) {
                     throw new EvalException("no parent frame found for " + lres);
                 }
                 return rval.eval(context);
+            case "::":
+                return new List(lval.eval(frame), rval.eval(frame));
             default:
                 throw new EvalException("unknown operator: " + op);
         }

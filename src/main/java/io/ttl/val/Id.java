@@ -37,16 +37,12 @@ public class Id implements Val {
 
     @Override
     public Double evalNum(Frame frame) {
-        Val v = frame.val(name);
-        v.expect(Type.num);
-        return v.evalNum(frame);
+        return frame.val(name).evalNum(frame);
     }
 
     @Override
     public String evalStr(Frame frame) {
-        Val v = frame.val(name);
-        v.expect(Type.string);
-        return v.evalStr(frame);
+        return frame.val(name).evalStr(frame);
     }
 
     @Override

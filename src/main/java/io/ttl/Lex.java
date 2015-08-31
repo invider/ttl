@@ -100,9 +100,9 @@ public class Lex {
                         tokenBuffer = new StringBuilder();
                     } else {
                         switch(c) {
-                            case '+':case '*':case '%':
+                            case '+':case '%':
                             case '=':case '(':case ')':case '[':case ']':
-                            case ',':case ':':case '?':case '@':
+                            case ',':case '@':
                                 return new Token(
                                         Token.Type.operator, "" + c);
                             case '.':
@@ -110,6 +110,15 @@ public class Lex {
                                     return new Token(Token.Type.operator, "..");
                                 }
                                 return new Token(Token.Type.operator, ".");
+                            case ':':
+                                if (match(':')) {
+                                    return new Token(Token.Type.operator, "::");
+                                } else if (match('^')) {
+                                    return new Token(Token.Type.operator, ":^");
+                                } else if (match('~')) {
+                                    return new Token(Token.Type.operator, ":~");
+                                }
+                                return new Token(Token.Type.operator, ":");
                             case '/':
                                 if (match('*')) {
                                     state = State.comment;
@@ -153,6 +162,16 @@ public class Lex {
                                    return new Token(Token.Type.operator, "!!");
                                 }
                                 return new Token(Token.Type.operator, "!");
+                            case '*':
+                                if (match('~')) {
+                                    return new Token(Token.Type.operator, "*~");
+                                }
+                                return new Token(Token.Type.operator, "*");
+                            case '?':
+                                if (match('~')) {
+                                    return new Token(Token.Type.operator, "?~");
+                                }
+                                return new Token(Token.Type.operator, "?");
                             default:
                                 throw new EvalException(
                                         "lexical error: unexpected symbol ["

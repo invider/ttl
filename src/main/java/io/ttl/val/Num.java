@@ -10,6 +10,10 @@ public class Num implements Val {
         this.val = val;
     }
 
+    public Num(Long val) {
+        this.val = (double)val;
+    }
+
     @Override
     public Type getType() {
         return Type.num;

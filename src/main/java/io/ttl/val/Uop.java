@@ -57,6 +57,20 @@ public class Uop implements Val {
                 return frame.val(lval.eval(frame)
                         .expect(Type.num)
                         .evalNum(frame).longValue());
+            case 'H':
+                lv = lval.eval(frame);
+                if (lv.getType() != Type.list) {
+                    throw new EvalException(
+                            "operator :^ can't be applied to [" + lv + "]");
+                }
+                return ((List)lv).head();
+            case 'T':
+                lv= lval.eval(frame);
+                if (lv.getType() != Type.list) {
+                    throw new EvalException(
+                            "operator :~ can't be applied to [" + lv + "]");
+                }
+                return ((List)lv).tail();
             default:
                 throw new EvalException("unknown operator: " + op);
         }

@@ -2,27 +2,27 @@ package io.ttl.val;
 
 import io.ttl.EvalException;
 
-public class Group implements Val {
+public class While implements Val {
 
-    protected final Val head, tail;
+    protected final Val condVal, bodyVal;
 
-    public Group(Val head, Val tail) {
-        this.head = head;
-        this.tail = tail;
+    public While(Val condVal, Val bodyVal) {
+        this.condVal = condVal;
+        this.bodyVal = bodyVal;
     }
 
     @Override
     public Val expect(Type t) {
-        if (t != Type.group) {
+        if (t != Type.op) {
             throw new EvalException(
-                    "" + t + " was expected, but a group [" + this + "] found");
+                    "" + t + " was expected, but ?~ found");
         }
         return this;
     }
 
     @Override
     public Type getType() {
-        return Val.Type.group;
+        return Type.op;
     }
 
     @Override
@@ -32,12 +32,11 @@ public class Group implements Val {
 
     @Override
     public Val eval(Frame frame) {
-        if (head.getType() == Type.op && ((Op)head).matchOperator(":")) {
-            head.eval(frame); // name association side effect
-        } else {
-            frame.set(head.eval(frame)); // index association
+        Val res = Nil.NIL;
+        while (condVal.eval(frame).getType() != Val.Type.nil) {
+            res = bodyVal.eval(frame);
         }
-        return tail.eval(frame);
+        return res;
     }
 
     @Override
@@ -52,11 +51,13 @@ public class Group implements Val {
 
     @Override
     public String toString() {
-        return "" + head + ", " + tail;
+        return "[" + condVal + "]?~ [" + bodyVal + "]";
     }
 
     @Override
     public String toTree() {
-        return "(" + head.toTree() + " " + tail.toTree() + ")";
+        return "(?~ "
+                + " " + condVal.toTree()
+                + " " + bodyVal.toTree() + ")";
     }
 }

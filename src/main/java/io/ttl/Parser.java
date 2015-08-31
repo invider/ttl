@@ -28,7 +28,9 @@ public class Parser {
     // FULL SYNTAX
     // flow ::= expr moreflow
     // moreflow  ::= ,flow | <E>
-    // expr ::= condlevel
+    // expr ::= conslevel
+    // conslevel :: = condlevel morecons
+    // morecons ::= :: conslevel || <E>
     // condlevel ::= orlevel morecond
     // morecond ::= ? expr
     //          | ? expr !! expr
@@ -57,7 +59,8 @@ public class Parser {
     // not ::= dot | !dot
     // dot ::= atom moredot
     // moredot ::= . dot | .. dot | <E>
-    // associate ::= atom | atom:expr
+    // associate ::= unlistlevel | unlistlevel:expr
+    // unlistlevel ::= atom :^ | atom :~ | atom
     // atom ::= <number> callmaybe
     //          | <string> callmaybe
     //          | <id> callmaybe
@@ -87,7 +90,21 @@ public class Parser {
     }
 
     private Val expr() {
-        return condlevel();
+        return conslevel();
+    }
+
+    private Val conslevel() {
+        return morecons(condlevel());
+    }
+
+    private Val morecons(Val lval) {
+        Token t = lex.nextToken();
+        if (t.matchOperator("::")) {
+           return new Op("::", lval, conslevel());
+        } else {
+           lex.returnToken();
+           return lval;
+        }
     }
 
     private Val condlevel() {
@@ -106,6 +123,10 @@ public class Parser {
                 lex.returnToken();
                 return new If(lval, tval);
             }
+        } else if (t.matchOperator("?~")) {
+            return new While(lval, expr());
+        } else if (t.matchOperator("*~")) {
+            return new Loop(lval, expr());
         } else {
             lex.returnToken();
             return lval;
@@ -225,10 +246,23 @@ public class Parser {
     }
 
     private Val associate() {
-        Val lval = atom();
+        Val lval = unlistlevel();
         Token t = lex.nextToken();
         if (t.matchOperator(":")) {
             return new Op(":", lval, expr());
+        } else {
+            lex.returnToken();
+            return lval;
+        }
+    }
+
+    private Val unlistlevel() {
+        Val lval = atom();
+        Token t = lex.nextToken();
+        if (t.matchOperator(":^")) {
+            return new Uop('H', lval);
+        } else if (t.matchOperator(":~")) {
+            return new Uop('T', lval);
         } else {
             lex.returnToken();
             return lval;
