@@ -20,7 +20,7 @@ public class Level7 extends LevelBase {
         nil("f.z");
         eq("f.a+f.b", 6);
         eq("f.a*f.c", 10);
-        nil("f.c:nil");
+        success("f.c:nil");
         nil("f.c");
         eq(".f.a", 2);
         e("g:101");

@@ -92,13 +92,13 @@ public class Op implements Val {
                     Id id = (Id)lval;
                     Val val = rval.eval(frame);
                     frame.set(id.name, val);
-                    return val;
+                    return Success.SUCCESS;
                 } else {
                     try {
                         long i = lval.evalNum(frame).longValue();
                         Val val = rval.eval(frame);
                         frame.set(i, val);
-                        return val;
+                        return Success.SUCCESS;
                     } catch (EvalException e) {
                         new EvalException("id or number is expected", e);
                     }

@@ -76,20 +76,7 @@ public class Parser {
     }
 
     private Val flow() {
-        Val v = moreflow(expr());
-        boolean isLastAssociated = checkLastAssociation(v);
-        if (v.getType() == Val.Type.group) {
-            ((Group)v).setIsLastAssociated(isLastAssociated);
-        }
-        return v;
-    }
-
-    private boolean checkLastAssociation(Val v) {
-        if (v.getType() == Val.Type.group) {
-            return checkLastAssociation(((Group)v).getTail());
-        } else {
-            return (v instanceof Op) && ((Op)v).matchOperator(":");
-        }
+        return moreflow(expr());
     }
 
     private Val moreflow(Val lval) {
@@ -289,7 +276,12 @@ public class Parser {
         } else if (t.type == Token.Type.string) {
             return callmaybe(new Str("" + t.value));
         } else if (t.type == Token.Type.id) {
-            return callmaybe(new Id("" + t.value));
+            if (t.value.toString().equalsIgnoreCase("nil")
+                    || t.value.toString().equalsIgnoreCase("success")) {
+                return Nil.NIL;
+            } else {
+                return callmaybe(new Id("" + t.value));
+            }
         } else if (t.matchOperator("@")) {
             return callmaybe(new Uop('@', atom()));
         } else if (t.matchOperator("(")) {

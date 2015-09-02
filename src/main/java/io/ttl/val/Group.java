@@ -4,8 +4,6 @@ import io.ttl.EvalException;
 
 public class Group implements Val {
 
-    protected boolean isLastAssociated = false;
-
     protected final Val head, tail;
 
     public Group(Val head, Val tail) {
@@ -19,14 +17,6 @@ public class Group implements Val {
 
     public Val getTail() {
         return tail;
-    }
-
-    public boolean isLastAssociated() {
-        return isLastAssociated;
-    }
-
-    public void setIsLastAssociated(boolean isLastAssociated) {
-        this.isLastAssociated = isLastAssociated;
     }
 
     @Override

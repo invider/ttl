@@ -1,6 +1,7 @@
 package io.ttl;
 
 import io.ttl.val.Nil;
+import io.ttl.val.Success;
 import io.ttl.val.Val;
 
 public class LevelBase {
@@ -51,6 +52,13 @@ public class LevelBase {
      */
     protected void nil(String src) {
         assert repl.eval(src).equals(Nil.NIL);
+    }
+
+    /**
+     * expect success
+     */
+    protected void success(String src) {
+        assert repl.eval(src).equals(Success.SUCCESS);
     }
 
     /**
