@@ -4,11 +4,29 @@ import io.ttl.EvalException;
 
 public class Group implements Val {
 
+    protected boolean isLastAssociated = false;
+
     protected final Val head, tail;
 
     public Group(Val head, Val tail) {
         this.head = head;
         this.tail = tail;
+    }
+
+    public Val getHead() {
+        return head;
+    }
+
+    public Val getTail() {
+        return tail;
+    }
+
+    public boolean isLastAssociated() {
+        return isLastAssociated;
+    }
+
+    public void setIsLastAssociated(boolean isLastAssociated) {
+        this.isLastAssociated = isLastAssociated;
     }
 
     @Override

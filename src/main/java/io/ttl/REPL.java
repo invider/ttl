@@ -17,6 +17,8 @@ public class REPL extends Frame {
 
     private String srcBuffer;
 
+    private Frame env;
+
     public REPL() {
         try {
             defun(new Exit());
@@ -25,6 +27,7 @@ public class REPL extends Frame {
             defun(new Prin());
             defun(new Print());
             defun(new Input());
+            createEnv();
             execBoot("rom/boot");
             loadROM("rom");
             this.exec("config?config()!!print('no config found')");
@@ -36,6 +39,12 @@ public class REPL extends Frame {
 
     private void defun(SysFun sysfun) {
         this.set(sysfun.getName(), sysfun);
+    }
+
+    private void createEnv() {
+        Frame env = new Frame(this);
+        this.set("env", env);
+        this.env = env;
     }
 
     private void execBoot(String path) {
@@ -117,8 +126,12 @@ public class REPL extends Frame {
             Parser parser = new Parser(this, lex);
             Val val = parser.parse();
             multiline = false;
-            //System.out.println("< " + val);
-            //System.out.println("& " + val.toTree());
+            if (env.val("showStack").getType() != Type.nil) {
+                System.out.println("< " + val);
+            }
+            if (env.val("showTree").getType() != Type.nil) {
+                System.out.println("& " + val.toTree());
+            }
             return val.eval(frame);
         } catch (EolException e) {
             srcBuffer = src;

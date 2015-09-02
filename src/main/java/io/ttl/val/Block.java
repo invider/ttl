@@ -11,8 +11,14 @@ public class Block extends Frame {
     @Override
     public Val eval(Frame frame) {
         Frame newFrame = new Frame(frame);
-        if (val.getType() == Type.op && ((Op)val).matchOperator(":")) {
+        if ((val instanceof Op) && ((Op)val).matchOperator(":")) {
             val.eval(newFrame); // name association side effect
+        } else if (val.getType() == Type.group) {
+            if (((Group)val).isLastAssociated()) {
+                val.eval(newFrame); // name association side effect
+            } else {
+                newFrame.set(val.eval(newFrame)); // associate with index
+            }
         } else {
             newFrame.set(val.eval(newFrame)); // associate with index
         }

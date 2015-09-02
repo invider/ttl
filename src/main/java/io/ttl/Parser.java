@@ -76,7 +76,20 @@ public class Parser {
     }
 
     private Val flow() {
-        return moreflow(expr());
+        Val v = moreflow(expr());
+        boolean isLastAssociated = checkLastAssociation(v);
+        if (v.getType() == Val.Type.group) {
+            ((Group)v).setIsLastAssociated(isLastAssociated);
+        }
+        return v;
+    }
+
+    private boolean checkLastAssociation(Val v) {
+        if (v.getType() == Val.Type.group) {
+            return checkLastAssociation(((Group)v).getTail());
+        } else {
+            return (v instanceof Op) && ((Op)v).matchOperator(":");
+        }
     }
 
     private Val moreflow(Val lval) {
