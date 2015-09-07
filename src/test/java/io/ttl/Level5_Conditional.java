@@ -5,9 +5,9 @@ import org.junit.Test;
 /**
  * test conditional operator ? ... !! ... and logical && ||
  */
-public class Level5 extends LevelBase {
+public class Level5_Conditional extends LevelBase {
 
-    public Level5() {}
+    public Level5_Conditional() {}
 
     @Test
     public void conditionTest() {

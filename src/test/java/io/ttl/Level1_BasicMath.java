@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * test for simple math expressions: + - * / %
  */
-public class Level1 extends LevelBase {
+public class Level1_BasicMath extends LevelBase {
 
     @Test
     public void spacedExpressionTest() {

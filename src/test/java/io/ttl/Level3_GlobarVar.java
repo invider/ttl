@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * global frame and variables
  */
-public class Level3 extends LevelBase {
+public class Level3_GlobarVar extends LevelBase {
 
     @Test
     public void globalVariablesTest() {

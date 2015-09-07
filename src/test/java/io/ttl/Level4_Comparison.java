@@ -5,9 +5,9 @@ import org.junit.Test;
 /**
  * test comparison operators
  */
-public class Level4 extends LevelBase {
+public class Level4_Comparison extends LevelBase {
 
-    public Level4() {
+    public Level4_Comparison() {
         super();
         e("a:2");
         e("b:4");

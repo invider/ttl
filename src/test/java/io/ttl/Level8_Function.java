@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * test function calls
  */
-public class Level8 extends LevelBase {
+public class Level8_Function extends LevelBase {
 
     @Test
     public void functionCallTest()  {

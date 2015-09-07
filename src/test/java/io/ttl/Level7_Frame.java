@@ -5,9 +5,9 @@ import org.junit.Test;
 /**
  * test frames, current/parent frame and nil literal
  */
-public class Level7 extends LevelBase {
+public class Level7_Frame extends LevelBase {
 
-    public Level7() {}
+    public Level7_Frame() {}
 
     @Test
     public void frameTest() {
@@ -31,7 +31,12 @@ public class Level7 extends LevelBase {
 
     @Test
     public void frameIndexTest() {
-        // TODO
+        success("f:[100,101,102,103,104]");
+        eq("f.@0", 100);
+        eq("f.@1", 101);
+        eq("f.@2", 102);
+        eq("f.@3", 103);
+        eq("f.@4", 104);
     }
 
     @Test

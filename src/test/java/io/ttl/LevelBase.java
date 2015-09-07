@@ -2,16 +2,22 @@ package io.ttl;
 
 import io.ttl.val.Nil;
 import io.ttl.val.Success;
-import io.ttl.val.Val;
 
 public class LevelBase {
 
     protected REPL repl = new REPL();
 
+    /**
+     * just execute
+     */
     protected String e(String src) {
         return repl.exec(src);
     }
 
+    /**
+     * execute with double result expected
+     * @return double value
+     */
     protected double ed(String str) {
         String res = repl.exec(str).trim();
         try {
@@ -21,20 +27,32 @@ public class LevelBase {
         }
     }
 
+    /**
+     * execute and compare result with double value
+     */
     protected void eq(String src, double out) {
         assert ed(src) == out;
     }
 
+    /**
+     * execute and compare result with string value
+     */
     protected void eq(String src, String out) {
         String str = repl.eval(src).evalStr(repl);
         if (!str.equals(out)) throw new EvalException("string '"
             + out + "' was expected, but [" + str + "] found");
     }
 
+    /**
+     * expect double result is not equal to passed double value
+     */
     protected void neq(String src, double out) {
         assert ed(src) != out;
     }
 
+    /**
+     * expect string result is not equal to passed string value
+     */
     protected void neq(String src, String out) {
         String res = repl.exec(src).trim();
         assert !res.equals(out);

@@ -5,9 +5,9 @@ import org.junit.Test;
 /**
  * test flow: expr, expr, expr...
  */
-public class Level6 extends LevelBase {
+public class Level6_Flow extends LevelBase {
 
-    public Level6() {}
+    public Level6_Flow() {}
 
     @Test
     public void flowTest() {

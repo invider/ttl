@@ -13,7 +13,7 @@ public class Block extends Frame {
         Frame newFrame = new Frame(frame);
         Val res = val.eval(newFrame);
         if (res.getType() != Type.success) {
-            newFrame.set(val.eval(newFrame)); // associate with index
+            newFrame.set(res); // associate with index
         }
         return newFrame;
     }

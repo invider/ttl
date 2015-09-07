@@ -5,7 +5,7 @@ import org.junit.Test;
 /**
  * priorities for + - * / % and () operator
  */
-public class Level2 extends LevelBase {
+public class Level2_Priority extends LevelBase {
 
     @Test
     public void prioritiesTest() {
