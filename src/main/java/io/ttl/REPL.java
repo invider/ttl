@@ -3,13 +3,9 @@ package io.ttl;
 import io.ttl.sys.*;
 import io.ttl.val.*;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.*;
+import java.nio.file.*;
+import java.util.Map;
 
 public class REPL extends Frame {
 
@@ -31,6 +27,7 @@ public class REPL extends Frame {
             execBoot("rom/boot");
             loadROM("rom");
             this.exec("config?config()!!print('no config found')");
+            loadCache("cache");
         } catch (Throwable t) {
             t.printStackTrace();
             System.out.println("startup error!");
@@ -70,6 +67,18 @@ public class REPL extends Frame {
         loadFrame(this, rom);
     }
 
+    private void loadCache(String path) {
+        File cache = new File(path);
+        if (!cache.exists() || !cache.isDirectory()) {
+            throw new EvalException("can't find cache @" + path);
+        }
+        if (!cache.canRead()) {
+            throw new EvalException("can't read cache @" + path);
+        }
+        loadFrame(this, cache);
+    }
+
+
     private void loadFrame(Frame frame, File file) {
         File[] dir = file.listFiles();
         for(File nextFile: dir) {
@@ -107,6 +116,35 @@ public class REPL extends Frame {
         }
     }
 
+    private void saveVal(String path, String name, Val val) {
+        File parentPath = new File(path);
+        parentPath.mkdirs();
+        name = denormalizeId(name);
+
+        if (val.getType() == Type.frame) {
+            Frame frame = (Frame)val;
+            String framePath = path + "/" + name;
+            for (Map.Entry<String, Val> e: frame.getNameMap().entrySet()) {
+                saveVal(framePath, e.getKey(), e.getValue());
+            }
+        } else {
+            saveFile(path, name, val.toString());
+        }
+    }
+
+    private void saveFile(String parent, String name, String body) {
+        try {
+            Path path = FileSystems.getDefault().getPath(parent, name);
+            Files.write(path, body.getBytes("utf-8"),
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private String normalizeId(String name) {
         return name.replace('.', '!').replace('~', '$');
     }
@@ -139,6 +177,14 @@ public class REPL extends Frame {
             return Nil.NIL;
         } catch (Throwable t) {
             throw new EvalException(t, src);
+        }
+    }
+
+    @Override
+    public void set(String name, Val val) {
+        super.set(name, val);
+        if (name.startsWith("$")) {
+            saveVal("cache", name, val);
         }
     }
 }
