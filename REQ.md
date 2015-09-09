@@ -31,7 +31,7 @@ public interface Pile {
 How to Start
 ------------
 
-=== project
+### project
 * install git
 * register github account
 * create empty git project [ttl]
@@ -46,9 +46,9 @@ How to Start
 * create TotalTest.java with a simple test
 * run tests
 * commit and push changes to git repo
-=== ide
+### ide
 * install IDE (idea/eclipse...)
 * import project to IDE
-=== calc
+### calc
 * create simple REPL model
 
