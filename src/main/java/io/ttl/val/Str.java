@@ -52,7 +52,7 @@ public class Str implements Val {
 
     @Override
     public String toString() {
-        return "'" + val + "'";
+        return val;
     }
 
     @Override

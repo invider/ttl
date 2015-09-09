@@ -70,6 +70,6 @@ public class Level1_BasicMath extends LevelBase {
         assert ed("2*(3+4) + 10") == 24d;
         assert ed("1+(1*1+(1+1)*1)") == 4d;
         assert ed("pi:3.14, 2*pi") == 6.28d;
-        assert repl.exec("hw: 'hello world', hw").equals("'hello world'");
+        assert repl.exec("hw: 'hello world', hw").equals("hello world");
     }
 }
