@@ -46,9 +46,11 @@ How to Start
 * create TotalTest.java with a simple test
 * run tests
 * commit and push changes to git repo
+
 ### ide
 * install IDE (idea/eclipse...)
 * import project to IDE
+
 ### calc
 * create simple REPL model
 
