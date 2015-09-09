@@ -25,3 +25,17 @@ Math
 
 String
 ------
+- [ ] chatAt(string, number)
+- [ ] indexOf(string, string)
+- [ ] lastIndexOf(string, string)
+- [ ] toList(string)
+- [ ] substring(string, number, number)
+- [ ] replace(string, string, string)
+- [ ] trim(string)
+- [ ] startsWith(string, string)
+- [ ] endsWith(string, string)
+- [ ] toUpperCase(string)
+- [ ] toLowerCase(string)
+- [ ] tokenize(string, string) 
+- [ ] length(string)
+
