@@ -35,6 +35,7 @@ public class REPL extends Frame {
             this.exec("sys.config?sys.config()||print('no sys.config found!')");
             if (diagnostics) {
                 this.exec("sys.test?score:sys.test()||print('no sys.test found!')");
+                this.exec("print('Test Score: ' + score)");
             }
             this.exec("sys.startup?sys.startup()||print('no sys.startup found!')");
             this.exec("sys.welcome?sys.welcome()||print('Welcome!')");
