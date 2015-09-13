@@ -23,24 +23,24 @@ public class Parser {
     //                 | / atom morefactors
     //                 | % atom morefactors
     //                 | <E>
-    // atom ::= <number> | <string> | <id> | (expr)
+    // atom ::= <number> | <str> | <id> | (expr)
 
     // FULL SYNTAX
     // flow ::= expr moreflow
     // moreflow  ::= ,flow | <E>
     // expr ::= conslevel
     // conslevel :: = condlevel morecons
-    // morecons ::= :: conslevel || <E>
+    // morecons ::= :: conslevel | <E>
     // condlevel ::= orlevel morecond
     // morecond ::= ? expr
-    //          | ? expr !! expr
+    //          | ? expr || expr
     //          | ?~ expr
     //          | *~ expr
     //          | <E>
     // orlevel ::= andlevel moreor
-    // moreor ::= || andlevel moreor | <E>
+    // moreor ::= | andlevel moreor | <E>
     // andlevel :: levelcomp moreand
-    // moreand ::= && levelcomp moreand | <E>
+    // moreand ::= & levelcomp moreand | <E>
     // complevel ::= termlevel morecomp
     // morecomp ::= > termlevel morecomp
     //                | < termlevel morecomp
@@ -62,7 +62,7 @@ public class Parser {
     // associate ::= unlistlevel | unlistlevel:expr
     // unlistlevel ::= atom :^ | atom :~ | atom
     // atom ::= <number> callmaybe
-    //          | <string> callmaybe
+    //          | <str> callmaybe
     //          | <id> callmaybe
     //          | @atom
     //          | (flow) callmaybe
@@ -72,7 +72,12 @@ public class Parser {
     // callmaybe ::= (flow) | <E>
 
     public Val parse() {
-        return flow();
+        Val flow = flow();
+        if (lex.nextToken().type != Token.Type.eof) {
+            lex.returnToken();
+            return new Group(flow, parse());
+        }
+        return flow;
     }
 
     private Val flow() {
@@ -116,7 +121,7 @@ public class Parser {
         if (t.matchOperator("?")) {
             Val tval = expr();
             t = lex.nextToken();
-            if (t.matchOperator("!!")) {
+            if (t.matchOperator("||")) {
                 Val fval = expr();
                 return new If(lval, tval, fval);
             } else {
@@ -139,8 +144,8 @@ public class Parser {
 
     private Val moreor(Val lval) {
         Token t = lex.nextToken();
-        if (t.matchOperator("||")) {
-            return moreor(new Op("||", lval, andlevel()));
+        if (t.matchOperator("|")) {
+            return moreor(new Op("|", lval, andlevel()));
         } else {
             lex.returnToken();
             return lval;
@@ -153,8 +158,8 @@ public class Parser {
 
     private Val moreand(Val lval) {
         Token t = lex.nextToken();
-        if (t.matchOperator("&&")) {
-            return moreand(new Op("&&", lval, complevel()));
+        if (t.matchOperator("&")) {
+            return moreand(new Op("&", lval, complevel()));
         } else {
             lex.returnToken();
             return lval;

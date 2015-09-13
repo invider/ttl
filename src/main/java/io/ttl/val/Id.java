@@ -46,6 +46,12 @@ public class Id implements Val {
     }
 
     @Override
+    public boolean eq(Val v, Frame frame) {
+        throw new EvalException("can't compare: " + this + " = " + v);
+    }
+
+
+    @Override
     public String toString() {
         return "<" + name + ">";
     }

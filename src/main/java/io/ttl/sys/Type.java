@@ -5,11 +5,7 @@ import io.ttl.val.Str;
 import io.ttl.val.SysFun;
 import io.ttl.val.Val;
 
-public class TypeFunc extends SysFun {
-
-    public TypeFunc() {
-        this.name = "type";
-    }
+public class Type extends SysFun {
 
     @Override
     protected Val syscall(Frame frame) {

@@ -90,8 +90,9 @@ public class Frame implements Val {
     }
 
     public Val eval(String src, Frame frame) {
-        if (parent == null)
-            new EvalException("can't evaluate in this frame");
+        if (parent == null) {
+            throw new EvalException("can't evaluate in this frame");
+        }
         return parent.eval(src, frame);
     }
 
@@ -129,22 +130,44 @@ public class Frame implements Val {
 
     @Override
     public String evalStr(Frame frame) {
-        throw new EvalException("can't evaluate frame to string " + this);
+        throw new EvalException("can't evaluate frame to str " + this);
+    }
+
+    @Override
+    public boolean eq(Val v, Frame frame) {
+        if (v.getType() == Type.frame) {
+            Frame f = (Frame)v;
+            Map<Long, Val> nmap = f.getNumMap();
+            Map<String, Val> smap = f.getNameMap();
+            if (nmap.size() != this.numMap.size()) return false;
+            if (smap.size() != this.map.size()) return false;
+            for (Map.Entry<Long, Val> e: numMap.entrySet()) {
+                if (!e.getValue().eq(numMap.get(e.getKey()), frame)) return false;
+            }
+            for (Map.Entry<String, Val> e: map.entrySet()) {
+                if (!e.getValue().eq(map.get(e.getKey()), frame)) return false;
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override
     public String toString() {
         StringBuilder buf = new StringBuilder("[");
         for (Long index : numMap.keySet()) {
+            Val element = numMap.get(index);
             buf.append("#" + index)
                     .append(":")
-                    .append(numMap.get(index))
+                    .append(element.getType() == Type.frame? "[...]":element)
                     .append(", ");
         }
         for (String name : map.keySet()) {
+            Val element = map.get(name);
             buf.append(name)
                     .append(":")
-                    .append(map.get(name)).append(", ");
+                    .append(element.getType() == Type.frame? "[...]":element)
+                    .append(", ");
         }
         String res = buf.toString();
         if (res.length() > 1) {

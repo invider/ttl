@@ -1,4 +1,4 @@
-package io.ttl.sys;
+package io.ttl.sys.util;
 
 import io.ttl.val.Frame;
 import io.ttl.val.Str;
@@ -7,15 +7,14 @@ import io.ttl.val.Val;
 
 import java.util.Date;
 
-public class Time extends SysFun {
+public class DateFunc extends SysFun {
 
-    public Time() {
-        this.name = "time";
+    public DateFunc() {
+        super("date");
     }
 
     @Override
     protected Val syscall(Frame frame) {
-        return new Str((new Date()).toString());
+        return new Str((new java.util.Date()).toString());
     }
-
 }

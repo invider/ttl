@@ -19,7 +19,7 @@ public class Str implements Val {
     public Val expect(Type t) {
         if (t != Type.string) {
             throw new EvalException(
-                    "" + t + " was expected, but a string '"
+                    "" + t + " was expected, but a str '"
                             + val + "' is found");
         }
         return this;
@@ -40,7 +40,7 @@ public class Str implements Val {
         try {
             return Double.parseDouble(val.trim());
         } catch (NumberFormatException e) {
-            throw new EvalException("number is expected, but string '"
+            throw new EvalException("number is expected, but str '"
                 + val + "' is found", e);
         }
     }
@@ -49,6 +49,12 @@ public class Str implements Val {
     public String evalStr(Frame frame) {
         return val;
     }
+
+    @Override
+    public boolean eq(Val v, Frame frame) {
+        return val.equals(v.evalStr(frame));
+    }
+
 
     @Override
     public String toString() {

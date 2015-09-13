@@ -39,7 +39,12 @@ public class Nil implements Val {
 
     @Override
     public String evalStr(Frame frame) {
-        throw new EvalException("string is expected, but NIL is found");
+        throw new EvalException("str is expected, but NIL is found");
+    }
+
+    @Override
+    public boolean eq(Val v, Frame frame) {
+        return v.getType() == Type.nil;
     }
 
     @Override

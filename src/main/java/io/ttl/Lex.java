@@ -78,7 +78,7 @@ public class Lex {
             switch(state) {
                 case base:
                     if (c == 0) return new Token(Token.Type.eof);
-                    if (c == ' ' || c == 0x0D || c == 0x0A) {
+                    if (c == ' ' || c == '\t' || c == 0x0D || c == 0x0A) {
                     } else if (c == '#') {
                         state = State.linecomment;
                     } else if (c >= '0' && c <= '9') {
@@ -102,7 +102,7 @@ public class Lex {
                         switch(c) {
                             case '+':case '%':
                             case '=':case '(':case ')':case '[':case ']':
-                            case ',':case '@':
+                            case ',':case '@':case '!':case '&':
                                 return new Token(
                                         Token.Type.operator, "" + c);
                             case '.':
@@ -147,21 +147,6 @@ public class Lex {
                                 } else{
                                     return new Token(Token.Type.operator, ">");
                                 }
-                            case '&':
-                                if (match('&')) {
-                                    return new Token(Token.Type.operator, "&&");
-                                }
-                                return new Token(Token.Type.operator, "&");
-                            case '|':
-                                if (match('|')) {
-                                    return new Token(Token.Type.operator, "||");
-                                }
-                                return new Token(Token.Type.operator, "|");
-                            case '!':
-                                if (match('!')) {
-                                   return new Token(Token.Type.operator, "!!");
-                                }
-                                return new Token(Token.Type.operator, "!");
                             case '*':
                                 if (match('~')) {
                                     return new Token(Token.Type.operator, "*~");
@@ -172,6 +157,11 @@ public class Lex {
                                     return new Token(Token.Type.operator, "?~");
                                 }
                                 return new Token(Token.Type.operator, "?");
+                            case '|':
+                                if (match('|')) {
+                                    return new Token(Token.Type.operator, "||");
+                                }
+                                return new Token(Token.Type.operator, "|");
                             default:
                                 throw new EvalException(
                                         "lexical error: unexpected symbol ["

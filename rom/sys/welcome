@@ -1,0 +1,11 @@
+# welcome message
+print('-----------------------')
+print('#####  #####  #')
+print('  #      #    #')
+print('  #      #    #')
+print('  #      #    #')
+print('  #      #    #')
+print('  #      #    #####')
+print('')
+print('Welcome to TTL Console!')
+

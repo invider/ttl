@@ -20,5 +20,7 @@ public interface Val {
 
     public String evalStr(Frame frame);
 
+    public boolean eq(Val v, Frame frame);
+
     public String toTree();
 }

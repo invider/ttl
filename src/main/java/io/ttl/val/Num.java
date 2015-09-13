@@ -50,6 +50,11 @@ public class Num implements Val {
     }
 
     @Override
+    public boolean eq(Val v, Frame frame) {
+        return val.equals(v.evalNum(frame));
+    }
+
+    @Override
     public String toString() {
         return "" + val;
     }

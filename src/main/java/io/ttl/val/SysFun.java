@@ -4,7 +4,16 @@ import io.ttl.EvalException;
 
 public abstract class SysFun implements Val {
 
-    protected String name;
+    protected final String name;
+
+    public SysFun() {
+        String n = this.getClass().getSimpleName();
+        name = n.substring(0, 1).toLowerCase() + n.substring(1, n.length());
+    }
+
+    public SysFun(String name) {
+        this.name = name;
+    }
 
     public String getName() {
         return name;
@@ -44,6 +53,11 @@ public abstract class SysFun implements Val {
     @Override
     public String evalStr(Frame frame) {
         return eval(frame).expect(Type.string).evalStr(frame);
+    }
+
+    @Override
+    public boolean eq(Val v, Frame frame) {
+        throw new EvalException("can't compare: " + this + " = " + v);
     }
 
     @Override

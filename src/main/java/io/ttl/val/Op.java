@@ -43,7 +43,6 @@ public class Op implements Val {
                 case "<=": return (ld <= rd)? Val.TRUE : Nil.NIL;
                 case ">": return (ld > rd)? Val.TRUE : Nil.NIL;
                 case ">=": return (ld >= rd)? Val.TRUE : Nil.NIL;
-                case "=": return (ld == rd)? Val.TRUE : Nil.NIL;
                 case "<>": return (ld != rd)? Val.TRUE : Nil.NIL;
             }
         } else if (lv.getType() == Type.string) {
@@ -54,7 +53,6 @@ public class Op implements Val {
                 case "<=": return (ls.compareTo(rs) <= 0)? Val.TRUE : Nil.NIL;
                 case ">": return (ls.compareTo(rs) > 0)? Val.TRUE : Nil.NIL;
                 case ">=": return (ls.compareTo(rs) >= 0)? Val.TRUE : Nil.NIL;
-                case "=": return (ls.equals(rs))? Val.TRUE : Nil.NIL;
                 case "<>": return (!ls.equals(rs))? Val.TRUE : Nil.NIL;
             }
         } else {
@@ -103,16 +101,18 @@ public class Op implements Val {
                         new EvalException("id or number is expected", e);
                     }
                 }
-            case "<":case "<=":case ">":case ">=":
-            case "=":case "<>":
+            case "=":
+                if(lval.eval(frame).eq(rval.eval(frame), frame)) return Val.TRUE;
+                return Nil.NIL;
+            case "<":case "<=":case ">":case ">=":case "<>":
                 return comp(frame);
-            case "&&":
+            case "&":
                 Val lp = lval.eval(frame);
                 if (lp.getType() == Type.nil) return Nil.NIL;
                 Val rp = rval.eval(frame);
                 if (rp.getType() == Type.nil) return Nil.NIL;
                 return Val.TRUE;
-            case "||":
+            case "|":
                 lp = lval.eval(frame);
                 if (lp.getType() != Type.nil) return Val.TRUE;
                 rp = rval.eval(frame);
@@ -151,6 +151,11 @@ public class Op implements Val {
     @Override
     public String evalStr(Frame frame) {
         return eval(frame).expect(Type.string).evalStr(frame);
+    }
+
+    @Override
+    public boolean eq(Val v, Frame frame) {
+        throw new EvalException("can't compare: " + this + " = " + v);
     }
 
     public boolean matchOperator(String op) {

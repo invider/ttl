@@ -40,10 +40,9 @@ public class Group implements Val {
 
     @Override
     public Val eval(Frame frame) {
-        if (head.getType() == Type.op && ((Op)head).matchOperator(":")) {
-            head.eval(frame); // name association side effect
-        } else {
-            frame.set(head.eval(frame)); // index association
+        Val res = head.eval(frame);
+        if (res.getType() != Type.success) {
+            frame.set(res); // index association
         }
         return tail.eval(frame);
     }
@@ -57,6 +56,12 @@ public class Group implements Val {
     public String evalStr(Frame frame) {
         return eval(frame).expect(Type.string).evalStr(frame);
     }
+
+    @Override
+    public boolean eq(Val v, Frame frame) {
+        throw new EvalException("can't compare: " + this + " = " + v);
+    }
+
 
     @Override
     public String toString() {

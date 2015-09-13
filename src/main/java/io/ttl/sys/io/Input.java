@@ -1,4 +1,4 @@
-package io.ttl.sys;
+package io.ttl.sys.io;
 
 import io.ttl.EvalException;
 import io.ttl.val.Frame;
@@ -15,11 +15,6 @@ public class Input extends SysFun {
     private BufferedReader br =
             new BufferedReader(new InputStreamReader(System.in));
 
-    public Input() {
-        this.name = "input";
-    }
-
-    @Override
     protected Val syscall(Frame frame) {
         try {
             return new Str(br.readLine());

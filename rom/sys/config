@@ -1,0 +1,6 @@
+# system configuration script
+
+print('configuring...')
+prin('version: ')
+print(version)
+

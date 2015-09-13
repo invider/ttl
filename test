@@ -10,5 +10,7 @@ then
 elif which gnome-open > /dev/null
 then
     nohup gnome-open $URL > /dev/null 2>&1 &
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    open $URL
 fi
 

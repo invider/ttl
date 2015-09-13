@@ -1,6 +1,11 @@
 package io.ttl;
 
 import io.ttl.sys.*;
+import io.ttl.sys.io.Input;
+import io.ttl.sys.io.Prin;
+import io.ttl.sys.io.Print;
+import io.ttl.sys.math.*;
+import io.ttl.sys.util.DateFunc;
 import io.ttl.val.*;
 
 import java.io.*;
@@ -9,28 +14,34 @@ import java.util.Map;
 
 public class REPL extends Frame {
 
+    public static final String SHOW_TREE = "showTree";
+    public static final String SHOW_STACK = "showStack";
+    public static final String SHOW_NIL = "showNil";
+
     public boolean multiline = false;
 
     private String srcBuffer;
 
-    private Frame env;
+    private Frame env, sys;
 
-    public REPL() {
+    public REPL(boolean diagnostics) {
         try {
-            defun(new Exit());
-            defun(new Time());
-            defun(new TypeFunc());
-            defun(new Prin());
-            defun(new Print());
-            defun(new Input());
             createEnv();
-            execBoot("rom/boot");
+            createSys();
+            defineConstants();
+            defineSysFunctions();
+            execBoot("rom/sys/boot");
             loadROM("rom");
-            this.exec("config?config()!!print('no config found')");
+            this.exec("sys.config?sys.config()||print('no sys.config found!')");
+            if (diagnostics) {
+                this.exec("sys.test?score:sys.test()||print('no sys.test found!')");
+            }
+            this.exec("sys.startup?sys.startup()||print('no sys.startup found!')");
+            this.exec("sys.welcome?sys.welcome()||print('Welcome!')");
             loadCache("cache");
         } catch (Throwable t) {
-            t.printStackTrace();
-            System.out.println("startup error!");
+            Util.error("startup error!");
+            throw new EvalException("startup failed!", t);
         }
     }
 
@@ -38,19 +49,60 @@ public class REPL extends Frame {
         this.set(sysfun.getName(), sysfun);
     }
 
+    private void defineSysFunctions() {
+        defun(new Exit());
+        defun(new Help());
+        defun(new Assert());
+        defun(new True());
+        defun(new DateFunc());
+        defun(new io.ttl.sys.Type());
+        // math
+        defun(new Abs());
+        defun(new Acos());
+        defun(new Asin());
+        defun(new Atan());
+        defun(new Ceil());
+        defun(new Cos());
+        defun(new Exp());
+        defun(new Floor());
+        defun(new Log());
+        defun(new Max());
+        defun(new Min());
+        defun(new Pow());
+        defun(new Random());
+        defun(new Sin());
+        defun(new Sqrt());
+        defun(new Tan());
+        // io
+        defun(new Prin());
+        defun(new Print());
+        defun(new Input());
+        // sys
+        sys.set("test", new Test());
+    }
+
+    private void defineConstants() {
+        this.set("_pi", new Num(Math.PI));
+        this.set("_e", new Num(Math.E));
+    }
+
     private void createEnv() {
-        Frame env = new Frame(this);
+        this.env = new Frame(this);
         this.set("env", env);
-        this.env = env;
+    }
+
+    private void createSys() {
+        this.sys = new Frame(this);
+        this.set("sys", sys);
     }
 
     private void execBoot(String path) {
         File boot = new File(path);
         if (!boot.exists() || !boot.isFile()) {
-            System.out.println("no boot script found");
+            Util.warn("no boot script found");
         }
         if (!boot.canRead()) {
-            System.out.println("can't read boot script");
+            Util.warn("can't read the boot script");
         }
         String bootScript = loadFile(boot);
         this.exec(bootScript);
@@ -83,11 +135,18 @@ public class REPL extends Frame {
         File[] dir = file.listFiles();
         for(File nextFile: dir) {
             if (!nextFile.canRead()) {
-                System.out.println("can't read: " + nextFile.getPath());
+                Util.warn("can't read: " + nextFile.getPath());
                 continue;
             }
             if (nextFile.isDirectory()) {
-                Frame nextFrame = new Frame();
+                String name = normalizeId(nextFile.getName());
+                Val existingFrame = frame.val(name);
+                Frame nextFrame = null;
+                if (existingFrame.getType() == Type.frame) {
+                    nextFrame = (Frame)existingFrame;
+                } else {
+                    nextFrame = new Frame();
+                }
                 frame.set(normalizeId(nextFile.getName()), nextFrame);
                 loadFrame(nextFrame, nextFile);
             } else {
@@ -110,8 +169,7 @@ public class REPL extends Frame {
             Path path = FileSystems.getDefault().getPath(file.getParent(), file.getName());
             return new String(Files.readAllBytes(path), "utf-8");
         } catch (IOException e) {
-            System.out.println("can't read: " + file.getPath());
-            e.printStackTrace();
+            Util.warn("can't read: " + file.getPath());
             return "";
         }
     }
@@ -121,7 +179,7 @@ public class REPL extends Frame {
         parentPath.mkdirs();
         name = denormalizeId(name);
 
-        if (val.getType() == Type.frame) {
+        if (val.getType() == Val.Type.frame) {
             Frame frame = (Frame)val;
             String framePath = path + "/" + name;
             for (Map.Entry<String, Val> e: frame.getNameMap().entrySet()) {
@@ -139,9 +197,9 @@ public class REPL extends Frame {
                     StandardOpenOption.CREATE,
                     StandardOpenOption.TRUNCATE_EXISTING);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Util.error("can't save " + name);
         } catch (IOException e) {
-            e.printStackTrace();
+            Util.error("can't save " + name);
         }
     }
 
@@ -151,6 +209,10 @@ public class REPL extends Frame {
 
     private String denormalizeId(String id) {
         return id.replace('!', '.').replace('$', '~');
+    }
+
+    protected boolean isEnvDefined(String key) {
+        return env.val(key).getType() != Val.Type.nil;
     }
 
     @Override
@@ -164,11 +226,11 @@ public class REPL extends Frame {
             Parser parser = new Parser(this, lex);
             Val val = parser.parse();
             multiline = false;
-            if (env.val("showStack").getType() != Type.nil) {
-                System.out.println("< " + val);
+            if (isEnvDefined(SHOW_TREE)) {
+                Util.debug("< " + val);
             }
-            if (env.val("showTree").getType() != Type.nil) {
-                System.out.println("& " + val.toTree());
+            if (isEnvDefined(SHOW_STACK)) {
+                Util.debug("& " + val.toTree());
             }
             return val.eval(frame);
         } catch (EolException e) {

@@ -5,7 +5,7 @@ import io.ttl.val.Success;
 
 public class LevelBase {
 
-    protected REPL repl = new REPL();
+    protected REPL repl = new REPL(false);
 
     /**
      * just execute
@@ -35,11 +35,11 @@ public class LevelBase {
     }
 
     /**
-     * execute and compare result with string value
+     * execute and compare result with str value
      */
     protected void eq(String src, String out) {
         String str = repl.eval(src).evalStr(repl);
-        if (!str.equals(out)) throw new EvalException("string '"
+        if (!str.equals(out)) throw new EvalException("str '"
             + out + "' was expected, but [" + str + "] found");
     }
 
@@ -51,7 +51,7 @@ public class LevelBase {
     }
 
     /**
-     * expect string result is not equal to passed string value
+     * expect str result is not equal to passed str value
      */
     protected void neq(String src, String out) {
         String res = repl.exec(src).trim();

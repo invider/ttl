@@ -1,5 +1,8 @@
 package io.ttl;
 
+import io.ttl.val.Nil;
+import io.ttl.val.Val;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,24 +11,35 @@ public class Total {
     public static void main(String[] args) {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        REPL repl = new REPL();
+        REPL repl = new REPL(true);
 
         while(true) {
             try {
                 if (repl.multiline) System.out.print("' ");
                 else System.out.print("> ");
                 String line = br.readLine().trim();
-                String res = repl.exec(line);
+                Val res = repl.eval(line);
                 if (!repl.multiline) {
-                    System.out.println("= " + res);
+                    if (res.getType() != Val.Type.nil || repl.isEnvDefined(REPL.SHOW_NIL)) {
+                        Util.res("" + res);
+                    }
                 } else {
+                    // eval nothing and accept the rest of the input
                 }
             } catch (EvalException e) {
-                System.out.println("! " + e.getMessage() + " @(" + e.getSrc() + ")");
+                if (repl.eval("env.showTrace").getType() != Val.Type.nil) {
+                    e.printStackTrace();
+                }
             } catch (IOException e) {
-                System.out.println("! " + e.getMessage());
+                if (repl.eval("env.showTrace").getType() != Val.Type.nil) {
+                    e.printStackTrace();
+                }
+                Util.error(e.getMessage());
             } catch(Exception e) {
-                e.printStackTrace();
+                if (repl.eval("env.showTrace").getType() != Val.Type.nil) {
+                    e.printStackTrace();
+                }
+                Util.error(e.getMessage());
             }
         }
     }

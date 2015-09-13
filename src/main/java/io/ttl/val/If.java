@@ -59,11 +59,17 @@ public class If implements Val {
     }
 
     @Override
+    public boolean eq(Val v, Frame frame) {
+        throw new EvalException("can't compare: " + this + " = " + v);
+    }
+
+
+    @Override
     public String toString() {
         if (fval == null) {
             return "[" + cval + "]? [" + tval + "]";
         } else {
-            return "[" + cval + "]? [" + tval + "] !! [" + fval + "]";
+            return "[" + cval + "]? [" + tval + "] || [" + fval + "]";
         }
     }
 

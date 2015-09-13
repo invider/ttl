@@ -47,7 +47,18 @@ public class List extends Group implements Val {
 
     @Override
     public String evalStr(Frame frame) {
-        throw new EvalException("string is expected, but list is found");
+        throw new EvalException("str is expected, but list is found");
+    }
+
+    @Override
+    public boolean eq(Val v, Frame frame) {
+        if (v.getType() == Type.list) {
+            List l = (List)v;
+            if (head.getType() != l.head().getType()) return false;
+            if (tail.getType() != l.tail().getType()) return false;
+            return head.eq(l.head(), frame) && tail.eq(l.tail(), frame);
+        }
+        return false;
     }
 
     @Override
