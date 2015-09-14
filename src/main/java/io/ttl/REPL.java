@@ -126,10 +126,12 @@ public class REPL extends Frame {
     private void loadCache(String path) {
         File cache = new File(path);
         if (!cache.exists() || !cache.isDirectory()) {
-            throw new EvalException("can't find cache @" + path);
+            Util.warn("can't find cache @" + path);
+            return;
         }
         if (!cache.canRead()) {
-            throw new EvalException("can't read cache @" + path);
+            Util.warn("can't read cache @" + path);
+            return;
         }
         loadFrame(this, cache);
     }
