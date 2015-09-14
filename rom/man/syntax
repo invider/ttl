@@ -1,5 +1,46 @@
-syntax description:
-1.
-2.
-3.
+SYNTAX
 
+    flow ::= expr moreflow
+    moreflow  ::= ,flow | <E>
+    expr ::= conslevel
+    conslevel :: = condlevel morecons
+    morecons ::= :: conslevel | <E>
+    condlevel ::= orlevel morecond
+    morecond ::= ? expr
+             | ? expr || expr
+             | ?~ expr
+             | *~ expr
+             | <E>
+    orlevel ::= andlevel moreor
+    moreor ::= | andlevel moreor | <E>
+    andlevel :: levelcomp moreand
+    moreand ::= & levelcomp moreand | <E>
+    complevel ::= termlevel morecomp
+    morecomp ::= > termlevel morecomp
+                   | < termlevel morecomp
+                   | >= termlevel morecomp
+                   | <= termlevel morecomp
+                   | = termlevel morecomp
+                   | <> termlevel morecomp
+                   | <E>
+    termlevel ::= factorlevel moreterms
+    moreterms ::= + factorlevel moreterms | - factorlevel moreterms | <E>
+    factorlevel ::= not morefactors
+    morefactors ::= * not morefactors |
+                    / not morefactors |
+                    % not morefactors |
+                    <E>
+    not ::= dot | !dot
+    dot ::= atom moredot
+    moredot ::= . dot | .. dot | <E>
+    associate ::= unlistlevel | unlistlevel:expr
+    unlistlevel ::= atom :^ | atom :~ | atom
+    atom ::= <number> callmaybe
+             | <str> callmaybe
+             | <id> callmaybe
+             | @atom
+             | (flow) callmaybe
+             | [flow]
+             | .
+             | ..
+    callmaybe ::= (flow) | <E>

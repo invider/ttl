@@ -1,0 +1,1 @@
+todolist *~ print('[-] ' + it)

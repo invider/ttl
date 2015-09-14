@@ -17,7 +17,9 @@ public class REPL extends Frame {
 
     public static final String SHOW_TREE = "showTree";
     public static final String SHOW_STACK = "showStack";
+    public static final String SHOW_TRACE = "showTrace";
     public static final String SHOW_NIL = "showNil";
+    public static final String SHOW_SUCCESS = "showSuccess";
 
     public boolean multiline = false;
 
@@ -36,6 +38,7 @@ public class REPL extends Frame {
             this.exec("sys.config?sys.config()||print('no sys.config found!')");
             if (diagnostics) {
                 this.exec("sys.test?score:sys.test()||print('no sys.test found!')");
+                this.exec("print('-----------------------------')");
                 this.exec("print('Test Score: ' + score)");
             }
             this.exec("sys.startup?sys.startup()||print('no sys.startup found!')");

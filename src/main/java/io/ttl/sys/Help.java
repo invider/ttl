@@ -12,7 +12,7 @@ public class Help extends SysFun {
     protected Val syscall(Frame frame) {
         Val f = frame.val(0l);
         if (f.getType() == Type.nil) {
-            return frame.getParent().val("man.intro");
+            return frame.getParent().eval("man.intro");
         } else {
             StringBuilder res = new StringBuilder();
             String path = f.evalStr(frame);
@@ -22,6 +22,14 @@ public class Help extends SysFun {
             res.append(path);
             if (!tag.equals("")) {
                 res.append(" - " + tag);
+            } else {
+                // try to look in man
+                String manPath = "man." + path;
+                Val m = frame.getParent().eval(manPath);
+                if (m.getType() == Type.nil) {
+                    return new Str("no help found for " + path);
+                }
+                return m;
             }
             String manPath = path + "!man";
             String manExtract = manPath + "?" + manPath + "||''";

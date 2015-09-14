@@ -14,11 +14,11 @@ public class Test extends SysFun {
     @Override
     protected Val syscall(Frame frame) {
         Util.out("self-diagnostics...");
-        double score = testFrame(frame.getParent().getParent());
+        double score = testFrame(frame.getParent().getParent(), frame.getParent().getParent());
         return new Num(score);
     }
 
-    private double testFrame(Frame frame) {
+    private double testFrame(Frame frame, Frame root) {
         double score = 0;
         for (Map.Entry<String, Val> e: frame.getNameMap().entrySet()) {
             String name = e.getKey();
@@ -34,6 +34,7 @@ public class Test extends SysFun {
                     score += res.evalNum(frame);
                     System.out.print("OK");
                 } catch (Throwable t) {
+                    root.eval("todolist? todolist: '" + name + "'::todolist || todolist:'" + name + "'");
                     System.out.println("Failed");
                 }
                 // wait
