@@ -1,0 +1,3 @@
+true(clone)
+assert(clone([a:1]), [a:1])
+10

@@ -1,0 +1,3 @@
+true(flat)
+assert(flat([a:1,f:[b:1]]), [a:1,b:1])
+10

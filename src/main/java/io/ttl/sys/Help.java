@@ -14,16 +14,22 @@ public class Help extends SysFun {
         if (f.getType() == Type.nil) {
             return frame.getParent().val("man.intro");
         } else {
-            StringBuilder man = new StringBuilder();
+            StringBuilder res = new StringBuilder();
             String path = f.evalStr(frame);
             String tagPath = path + "!tag";
             String tagExtract = tagPath + "?" + tagPath + "||''";
             String tag = frame.getParent().eval(tagExtract).evalStr(frame);
-            man.append(path);
+            res.append(path);
             if (!tag.equals("")) {
-                man.append(" - " + tag);
+                res.append(" - " + tag);
             }
-            return new Str(man.toString());
+            String manPath = path + "!man";
+            String manExtract = manPath + "?" + manPath + "||''";
+            String man = frame.getParent().eval(manExtract).evalStr(frame);
+            if (!man.equals("")) {
+                res.append("\n\nDESCRIPTION:\n\n").append(man).append('\n');
+            }
+            return new Str(res.toString());
         }
     }
 }

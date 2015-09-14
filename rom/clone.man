@@ -1,0 +1,9 @@
+Clone frame by copying all key-values from it and cloning all included frames.
+
+USAGE
+
+    clone(<frame>) -> <frame>
+
+EXAMPLES
+
+    clone([a:1]) -> [a:1]

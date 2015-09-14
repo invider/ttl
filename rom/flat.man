@@ -1,0 +1,13 @@
+Function returns new frame based on original frame where all keys from included frames are migrated to the parent frame and included frames themselfs are deleted.
+
+In case of keys collisions, the parent key value takes priority.
+
+USAGE
+
+    flat(<frame>) -> <frame>
+
+EXAMPLE
+
+    flat([a:1,f:[b:2]]) -> [a:1,b:2]
+    flat([a:1,f:[a:2]]) -> [a:1]
+    flat([f:[a:1],g:[a:2]]) -> [a:1]

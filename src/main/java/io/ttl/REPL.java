@@ -5,6 +5,7 @@ import io.ttl.sys.io.Input;
 import io.ttl.sys.io.Prin;
 import io.ttl.sys.io.Print;
 import io.ttl.sys.math.*;
+import io.ttl.sys.str.Trim;
 import io.ttl.sys.util.DateFunc;
 import io.ttl.val.*;
 
@@ -74,6 +75,8 @@ public class REPL extends Frame {
         defun(new Sin());
         defun(new Sqrt());
         defun(new Tan());
+        // str
+        defun(new Trim());
         // io
         defun(new Prin());
         defun(new Print());
@@ -249,5 +252,9 @@ public class REPL extends Frame {
         if (name.startsWith("$")) {
             saveVal("cache", name, val);
         }
+    }
+
+    @Override
+    public void set(Val val) {
     }
 }
