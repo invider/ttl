@@ -38,7 +38,7 @@ public class Test extends SysFun {
                 }
                 // wait
                 try {
-                    Thread.currentThread().sleep(250);
+                    Thread.currentThread().sleep(200);
                 } catch (InterruptedException ie) {}
                 System.out.print("\r");
                 System.out.print("                                        ");
