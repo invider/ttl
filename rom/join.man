@@ -1,0 +1,12 @@
+Joins two frames and creates a new frame that includes all keys and values from the original ones.
+
+In case of keys collision the left frame value takes priority.
+
+USAGE
+
+    join(<frame1>,<frame2>) -> <frame>
+
+EXAMPLES
+
+    join([a:1], [b:2]) -> [a:1,b:2]
+    join([a:1], [a:2]) -> [a:1]

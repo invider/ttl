@@ -1,3 +1,37 @@
-TTL ReadMe
+- intro -
 
+INTRODUCTION TO TTL
+
+    TTL is a totally lazy calculator that provides rich computational facilities.
+
+EXPRESSIONS
+
+    Every time you type something in the console and press <Enter> you are evaluating an expression.
+    Everything is an expression for ttl and every expression evaluates to some result.
+
+        2+2 -> 4
+
+    In this example -> means 'evaluates to' and there is actually no -> operator in ttl.
+
+    Some more examples:
+
+       2+2*4 -> 10.0
+       2=2 -> 1.0
+       2=3 -> <NIL>
+       undefined -> <NIL>
+       undefined? 'var defined' || 'var undefined' -> 'var undefined'
+       2=2? 'true'||'nope' -> 'true'
+
+   <NIL> is a special value meaning the missing result. Even when there is nothing to return
+   from the expression (like in case of 'undefined' variable), a <NIL> special value will be returned.
+   <NIL> also returned as a FALSE value in conditionals.
+   Any other value works as TRUE. Comparison operators usually return 1.0 as a TRUE value.
+
+SEE ALSO
+
+    help('env')
+    help('syntax')
+    help(<command-name>)
+    todo()
+    score
 

@@ -4,7 +4,7 @@ import io.ttl.EvalException;
 
 public class Str implements Val {
 
-    private String val;
+    private final String val;
 
     public Str(String val) {
         this.val = val;

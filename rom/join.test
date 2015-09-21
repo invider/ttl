@@ -1,0 +1,4 @@
+true(join)
+assert(join([a:1], [b:2]), [a:1,b:2])
+assert(join([a:1], [a:2]), [a:1])
+10

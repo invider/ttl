@@ -5,6 +5,7 @@ import io.ttl.sys.io.Input;
 import io.ttl.sys.io.Prin;
 import io.ttl.sys.io.Print;
 import io.ttl.sys.math.*;
+import io.ttl.sys.str.Trim;
 import io.ttl.sys.util.DateFunc;
 import io.ttl.val.*;
 
@@ -16,7 +17,9 @@ public class REPL extends Frame {
 
     public static final String SHOW_TREE = "showTree";
     public static final String SHOW_STACK = "showStack";
+    public static final String SHOW_TRACE = "showTrace";
     public static final String SHOW_NIL = "showNil";
+    public static final String SHOW_SUCCESS = "showSuccess";
 
     public boolean multiline = false;
 
@@ -35,6 +38,7 @@ public class REPL extends Frame {
             this.exec("sys.config?sys.config()||print('no sys.config found!')");
             if (diagnostics) {
                 this.exec("sys.test?score:sys.test()||print('no sys.test found!')");
+                this.exec("print('-----------------------------')");
                 this.exec("print('Test Score: ' + score)");
             }
             this.exec("sys.startup?sys.startup()||print('no sys.startup found!')");
@@ -74,6 +78,8 @@ public class REPL extends Frame {
         defun(new Sin());
         defun(new Sqrt());
         defun(new Tan());
+        // str
+        defun(new Trim());
         // io
         defun(new Prin());
         defun(new Print());
@@ -123,10 +129,12 @@ public class REPL extends Frame {
     private void loadCache(String path) {
         File cache = new File(path);
         if (!cache.exists() || !cache.isDirectory()) {
-            throw new EvalException("can't find cache @" + path);
+            Util.warn("can't find cache @" + path);
+            return;
         }
         if (!cache.canRead()) {
-            throw new EvalException("can't read cache @" + path);
+            Util.warn("can't read cache @" + path);
+            return;
         }
         loadFrame(this, cache);
     }
@@ -249,5 +257,9 @@ public class REPL extends Frame {
         if (name.startsWith("$")) {
             saveVal("cache", name, val);
         }
+    }
+
+    @Override
+    public void set(Val val) {
     }
 }

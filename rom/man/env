@@ -1,0 +1,12 @@
+ENVIRONMENT
+
+The environment is configured by setting values in .env frame.
+
+VARIABLES
+
+    showNil - show <NIL> result in console if defined
+    showSuccess - show assignment <SUCCESS> result if defined
+    showTrace - debug option to show java stacktrace of the catched exception
+    showTree - debug option to show parsed tree view
+    showStack - debug option to show parsed stack view
+
