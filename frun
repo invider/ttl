@@ -1,0 +1,4 @@
+#!/bin/sh
+
+gradle assemble --continue run --console plain
+
